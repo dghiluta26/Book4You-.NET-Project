@@ -1,0 +1,14 @@
+@{
+    ViewData["Title"] = "Admin";
+}
+
+<div class="page-hero">
+    <h1>Admin area</h1>
+    <p>Quick links</p>
+</div>
+
+<div class="admin-quicklinks">
+    <a asp-controller="Admin" asp-action="Bookings" class="filter-btn">Bookings</a>
+    <a asp-controller="Admin" asp-action="Users" class="filter-btn">Users</a>
+    <a asp-controller="Admin" asp-action="UnavailablePeriods" class="filter-btn">Unavailable Periods</a>
+</div>

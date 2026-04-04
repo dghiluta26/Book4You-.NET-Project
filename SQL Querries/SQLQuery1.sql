@@ -1,0 +1,26 @@
+IF DB_ID('Book4YouDb') IS NULL
+BEGIN
+    CREATE DATABASE Book4YouDb;
+END
+GO
+
+USE Book4YouDb;
+GO
+
+IF OBJECT_ID('dbo.Users', 'U') IS NULL
+BEGIN
+    CREATE TABLE Users (
+        Id INT PRIMARY KEY IDENTITY(1,1),
+        Email NVARCHAR(100) NOT NULL UNIQUE,
+        FirstName NVARCHAR(100) NOT NULL,
+        LastName NVARCHAR(100) NOT NULL,
+        Password NVARCHAR(255) NOT NULL,
+        Address NVARCHAR(255) NULL
+    );
+END
+GO
+
+SELECT @@SERVERNAME AS ServerName, DB_NAME() AS DatabaseName;
+SELECT * FROM Users;
+
+DELETE FROM Users;

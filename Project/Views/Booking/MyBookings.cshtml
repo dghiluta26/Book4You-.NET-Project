@@ -1,0 +1,42 @@
+@model IEnumerable<Project.Models.Booking>
+
+@{
+    ViewData["Title"] = "My bookings";
+}
+
+<div class="page-hero">
+    <h1>My bookings</h1>
+    <p>List of your reservations</p>
+</div>
+
+<div class="accommodations-container page" style="max-width:900px; margin: 30px auto;">
+    @if (!Model.Any())
+    {
+        <div style="display:flex; justify-content:center; align-items:center; padding:20px;">
+            <div class="auth-card" style="padding:20px; text-align:center; max-width:460px; width:100%;">
+                <p>You have no bookings yet.</p>
+                <a asp-controller="Accommodation" asp-action="Accommodations" class="filter-btn" style="margin-top:10px; display:inline-block;">Browse stays</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="accommodations-grid" style="grid-template-columns: 1fr;">
+            @foreach (var booking in Model)
+            {
+                <div class="accommodation-card" style="display:flex; gap:16px; padding:16px; align-items:center;">
+                    <img src="@booking.Accommodation.ImageUrl" alt="img" style="width:160px; height:110px; object-fit:cover; border-radius:8px;" />
+                    <div style="flex:1;">
+                        <h3 style="margin:0 0 8px 0;">@booking.Accommodation.Title</h3>
+                        <p style="margin:0 0 6px 0; color:#666;">@booking.Accommodation.Location</p>
+                        <p style="margin:0 0 6px 0;">Check in: @booking.CheckInDate.ToShortDateString() &nbsp; • &nbsp; Check out: @booking.CheckOutDate.ToShortDateString()</p>
+                        <p style="margin:0 0 6px 0; font-weight:700;">Total: @booking.TotalPrice.ToString("C")</p>
+                    </div>
+                    <div>
+                        <a asp-controller="Accommodation" asp-action="AccommodationDetails" asp-route-id="@booking.AccommodationId" class="clear-btn">View</a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

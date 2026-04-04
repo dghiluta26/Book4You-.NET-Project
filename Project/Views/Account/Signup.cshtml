@@ -1,0 +1,64 @@
+﻿@model Project.Models.SignupViewModel
+
+<main class="auth-page signup-bg">
+    <section class="auth-main">
+        <div class="auth-card">
+            <h1>Create account</h1>
+            <p class="auth-subtitle">Complete the form below.</p>
+
+            @if (ViewBag.Error != null)
+            {
+                <p style="color: #ffb3b3;">@ViewBag.Error</p>
+            }
+
+            <form asp-action="Signup" method="post" class="auth-form">
+
+                <div class="auth-grid">
+                    <label>
+                        First Name
+                        <input asp-for="FirstName" placeholder="First name" />
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    </label>
+
+                    <label>
+                        Last Name
+                        <input asp-for="LastName" placeholder="Last name" />
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </label>
+                </div>
+
+                <label>
+                    Email
+                    <input asp-for="Email" placeholder="Email" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                </label>
+
+                <label>
+                    Address
+                    <input asp-for="Address" placeholder="Address" />
+                    <span asp-validation-for="Address" class="text-danger"></span>
+                </label>
+
+                <label>
+                    Password
+                    <input asp-for="Password" type="password" placeholder="Password" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </label>
+
+                <label>
+                    Confirm Password
+                    <input asp-for="ConfirmPassword" type="password" placeholder="Confirm Password" />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                </label>
+
+                <button type="submit" class="auth-btn">Sign Up</button>
+            </form>
+        </div>
+    </section>
+</main>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

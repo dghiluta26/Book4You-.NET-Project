@@ -1,0 +1,110 @@
+﻿@model List<Project.Models.Accommodation>
+
+@{
+    ViewData["Title"] = "Accommodations";
+}
+
+<main class="page">
+    <section class="page-hero">
+        <h1>Find your ideal stay</h1>
+        <p>Browse villas, apartments, cabins and more, tailored to your trip.</p>
+    </section>
+
+    <section class="accommodations-section">
+        <div class="accommodations-container">
+
+            <form asp-controller="Accommodation" asp-action="Accommodations" method="get" class="accommodations-filter">
+                <div class="filter-grid">
+                    <div class="filter-group">
+                        <label for="location">Location</label>
+                        <input type="text" id="location" name="location" placeholder="e.g. Paris, France" value="@Context.Request.Query["location"]" />
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="type">Type</label>
+                        <select id="type" name="type">
+                            <option value="">All</option>
+                            <option value="Villa" selected="@(Context.Request.Query["type"] == "Villa")">Villa</option>
+                            <option value="Apartment" selected="@(Context.Request.Query["type"] == "Apartment")">Apartment</option>
+                            <option value="Cabin" selected="@(Context.Request.Query["type"] == "Cabin")">Cabin</option>
+                            <option value="Studio" selected="@(Context.Request.Query["type"] == "Studio")">Studio</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="maxPrice">Max Price</label>
+                        <input type="number" id="maxPrice" name="maxPrice" placeholder="e.g. 250" value="@Context.Request.Query["maxPrice"]" />
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="checkIn">Check In</label>
+                        <input type="date" id="checkIn" name="checkIn" value="@ViewBag.CheckIn" />
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="checkOut">Check Out</label>
+                        <input type="date" id="checkOut" name="checkOut" value="@ViewBag.CheckOut" />
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="guests">Guests</label>
+                        <input type="number" id="guests" name="guests" placeholder="e.g. 2" value="@ViewBag.Guests" min="1" />
+                    </div>
+                </div>
+
+                <div class="filter-actions">
+                    <button type="submit" class="filter-btn">Apply Filters</button>
+                    <a asp-controller="Accommodation" asp-action="Accommodations" class="clear-btn">Clear</a>
+                </div>
+            </form>
+
+            @if (Model == null || !Model.Any())
+            {
+                <div class="no-results">
+                    <h2>No accommodations found</h2>
+                    <p>Try changing the filters to explore more stays.</p>
+                </div>
+            }
+            else
+            {
+                <div class="accommodations-grid">
+                    @foreach (var stay in Model)
+                    {
+                        <div class="accommodation-card">
+                            <div class="accommodation-image-wrapper">
+                                <img src="@stay.ImageUrl" alt="@stay.Title" class="accommodation-image" />
+                                <span class="accommodation-type">@stay.Type</span>
+                            </div>
+
+                            <div class="accommodation-content">
+                                <div class="accommodation-top">
+                                    <h3>@stay.Title</h3>
+                                    <span class="accommodation-rating">★ @stay.Rating</span>
+                                </div>
+
+                                <p class="accommodation-location">@stay.Location</p>
+                                <p class="accommodation-description">@stay.Description</p>
+
+                                <div class="accommodation-details">
+                                    <span>@stay.Capacity guests</span>
+                                    <span>@stay.Bedrooms bedrooms</span>
+                                    <span>@stay.Bathrooms bathrooms</span>
+                                </div>
+
+                                <div class="accommodation-bottom">
+                                    <div class="accommodation-price">
+                                        <strong>€@stay.PricePerNight</strong>
+                                        <span>/ night</span>
+                                    </div>
+
+                                    <a asp-controller="Accommodation" asp-action="AccommodationDetails" asp-route-id="@stay.Id" class="stay-btn">View Stay</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+
+        </div>
+    </section>
+</main>

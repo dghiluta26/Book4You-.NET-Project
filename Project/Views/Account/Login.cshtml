@@ -1,0 +1,35 @@
+﻿@model Project.Models.LoginViewModel
+
+<main class="auth-page login-bg">
+    <section class="auth-main">
+        <div class="auth-card">
+            <h1>Login</h1>
+            <p class="auth-subtitle">Welcome back.</p>
+
+            @if (ViewBag.Error != null)
+            {
+                <p style="color: #ffb3b3;">@ViewBag.Error</p>
+            }
+
+            <form asp-action="Login" method="post" class="auth-form">
+                <label>
+                    Email
+                    <input asp-for="Email" placeholder="Email" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </label>
+
+                <label>
+                    Password
+                    <input asp-for="Password" type="password" placeholder="Password" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </label>
+
+                <button type="submit" class="auth-btn">Login</button>
+            </form>
+        </div>
+    </section>
+</main>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

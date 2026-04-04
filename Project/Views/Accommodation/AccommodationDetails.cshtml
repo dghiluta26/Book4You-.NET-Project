@@ -1,0 +1,194 @@
+﻿@model Project.Models.AccommodationDetailsViewModel
+
+@{
+    ViewData["Title"] = Model.Accommodation.Title;
+}
+
+<main class="page">
+    <section class="page-hero">
+        <h1>@Model.Accommodation.Title</h1>
+        <p>@Model.Accommodation.Location</p>
+    </section>
+
+    <section class="accommodation-details-section">
+        @Html.AntiForgeryToken()
+        <div class="accommodation-details-container">
+
+            <div class="details-image-wrapper">
+                @{
+                    var mainImage = Model.Images.FirstOrDefault(i => i.IsMain) ?? Model.Images.FirstOrDefault();
+                    var mainImageUrl = mainImage != null ? mainImage.ImageUrl : Model.Accommodation.ImageUrl;
+                }
+
+                <img id="mainAccommodationImage" src="@mainImageUrl" alt="@Model.Accommodation.Title" class="details-main-image" />
+
+                @if (Model.Images != null && Model.Images.Any())
+                {
+                    <div class="details-thumbnail-gallery">
+                        @foreach (var image in Model.Images)
+                        {
+                            <img src="@image.ImageUrl"
+                                 alt="@Model.Accommodation.Title"
+                                 class="details-thumbnail @(image.ImageUrl == mainImageUrl ? "active-thumbnail" : "")"
+                                 onclick="changeAccommodationImage('@image.ImageUrl', this)" />
+                        }
+                    </div>
+                }
+            </div>
+
+            <div class="details-content">
+                <div class="details-top-row">
+                    <div>
+                        <h2>@Model.Accommodation.Title</h2>
+                        <p class="details-location">@Model.Accommodation.Location</p>
+                    </div>
+
+                    <div class="details-rating">
+                        ★ @Model.Accommodation.Rating
+                    </div>
+                </div>
+
+                <p class="details-description">
+                    @Model.Accommodation.Description
+                </p>
+
+                <div class="details-info-grid">
+                    <div class="details-info-card">
+                        <span class="details-label">Type</span>
+                        <strong>@Model.Accommodation.Type</strong>
+                    </div>
+
+                    <div class="details-info-card">
+                        <span class="details-label">Guests</span>
+                        <strong>@Model.Accommodation.Capacity</strong>
+                    </div>
+
+                    <div class="details-info-card">
+                        <span class="details-label">Bedrooms</span>
+                        <strong>@Model.Accommodation.Bedrooms</strong>
+                    </div>
+
+                    <div class="details-info-card">
+                        <span class="details-label">Bathrooms</span>
+                        <strong>@Model.Accommodation.Bathrooms</strong>
+                    </div>
+                </div>
+
+                <div class="details-price-box">
+                    <div>
+                        <span class="details-price-label">Price per night</span>
+                        <div class="details-price">€@Model.Accommodation.PricePerNight</div>
+                    </div>
+
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <div style="display:flex; gap:8px; align-items:center;">
+                            <label style="color:#666;">Guests</label>
+                            <input type="number" id="bookGuests" min="1" max="@Model.Accommodation.Capacity" value="1" style="width:70px; padding:6px; border-radius:6px; border:1px solid #ddd;" />
+                        </div>
+
+                        <div style="display:flex; gap:8px; align-items:center;">
+                            <label style="color:#666;">Check-in</label>
+                            <input type="date" id="bookCheckIn" value="@ViewBag.CheckIn" />
+                        </div>
+
+                        <div style="display:flex; gap:8px; align-items:center;">
+                            <label style="color:#666;">Check-out</label>
+                            <input type="date" id="bookCheckOut" value="@ViewBag.CheckOut" />
+                        </div>
+
+                        <a href="#" class="details-book-btn" id="bookNowBtn" data-accommodation-id="@Model.Accommodation.Id">Book Now</a>
+                        <div id="bookingError" class="error-container" style="color:red; display:none; margin-left:8px;"></div>
+                    </div>
+                </div>
+
+                <div class="details-amenities">
+                    <h3>Amenities</h3>
+
+                    @if (Model.Amenities == null || !Model.Amenities.Any())
+                    {
+                        <p class="no-amenities">No amenities listed for this accommodation yet.</p>
+                    }
+                    else
+                    {
+                        <div class="amenities-list">
+                            @foreach (var amenity in Model.Amenities)
+                            {
+                                <span class="amenity-badge">@amenity.Name</span>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+
+        </div>
+    </section>
+</main>
+
+@section Scripts {
+    <script>
+        function changeAccommodationImage(imageUrl, clickedThumbnail) {
+            const mainImage = document.getElementById("mainAccommodationImage");
+            mainImage.src = imageUrl;
+
+            const thumbnails = document.querySelectorAll(".details-thumbnail");
+            thumbnails.forEach(t => t.classList.remove("active-thumbnail"));
+
+            clickedThumbnail.classList.add("active-thumbnail");
+        }
+
+        document.addEventListener('DOMContentLoaded', function(){
+            var bookBtn = document.getElementById('bookNowBtn');
+            if(!bookBtn) return;
+
+            bookBtn.addEventListener('click', function(e){
+                e.preventDefault();
+                var id = this.getAttribute('data-accommodation-id');
+                var guests = document.getElementById('bookGuests')?.value || '1';
+                var checkIn = document.getElementById('bookCheckIn')?.value || '';
+                var checkOut = document.getElementById('bookCheckOut')?.value || '';
+
+                fetch('@Url.Action("Book", "Booking")', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    },
+                    body: 'id=' + encodeURIComponent(id) + '&guests=' + encodeURIComponent(guests) + '&checkIn=' + encodeURIComponent(checkIn) + '&checkOut=' + encodeURIComponent(checkOut)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    var errEl = document.getElementById('bookingError');
+                    if (!errEl) errEl = document.createElement('div');
+
+                    if(data.success){
+                        // show inline success and redirect shortly
+                        errEl.style.color = '#1b5e20';
+                        errEl.style.display = 'block';
+                        errEl.innerText = "You've successfully booked this accommodation!";
+                        // redirect to MyBookings after short delay
+                        if(data.redirect) setTimeout(function(){ window.location = data.redirect; }, 900);
+                    } else if (data.loginRedirect) {
+                        // redirect to login if not authenticated
+                        window.location = data.loginRedirect;
+                    } else {
+                        // show inline error
+                        errEl.style.color = '#b00020';
+                        errEl.style.display = 'block';
+                        errEl.innerText = data.message || 'Booking failed';
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    var errEl = document.getElementById('bookingError');
+                    if (errEl) {
+                        errEl.style.color = '#b00020';
+                        errEl.style.display = 'block';
+                        errEl.innerText = 'An error occurred while booking.';
+                    } else {
+                        alert('An error occurred while booking.');
+                    }
+                });
+            });
+        });
+    </script>
+}

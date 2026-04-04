@@ -1,0 +1,35 @@
+@model List<Project.Models.User>
+
+@{
+    ViewData["Title"] = "Users";
+}
+
+<div class="page-hero"><h1>Users</h1></div>
+
+<div class="admin-area">
+    <table class="admin-table">
+        <thead>
+            <tr style="background:#f1f1f1;"><th style="padding:8px;">Email</th><th>Name</th><th>Role</th><th></th></tr>
+        </thead>
+        <tbody>
+            @foreach(var u in Model)
+            {
+                <tr>
+                    <td>@u.Email</td>
+                    <td>@u.FirstName @u.LastName</td>
+                    <td>@u.Role</td>
+                    <td>
+                        <div class="admin-actions">
+                            <form asp-controller="Admin" asp-action="ToggleRole" method="post" style="display:inline;">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@u.Id" />
+                                <button type="submit" class="clear-btn">Toggle Role</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    </table>
+</div>

@@ -1,0 +1,35 @@
+@model List<Project.Models.UnavailablePeriod>
+
+@{
+    ViewData["Title"] = "Unavailable Periods";
+}
+
+<div class="page-hero"><h1>Unavailable Periods</h1></div>
+
+<div class="admin-area">
+    <a asp-controller="Admin" asp-action="CreateUnavailablePeriod" class="filter-btn">Create period</a>
+
+    <table class="admin-table" style="border-collapse:collapse; margin-top:12px;">
+        <thead>
+            <tr style="background:#f1f1f1;"><th>AccommodationId</th><th>Start</th><th>End</th><th></th></tr>
+        </thead>
+        <tbody>
+            @foreach(var p in Model)
+            {
+                <tr>
+                    <td style="padding:12px 14px;">@p.AccommodationId</td>
+                    <td style="padding:12px 14px;">@p.StartDate.ToShortDateString()</td>
+                    <td style="padding:12px 14px;">@p.EndDate.ToShortDateString()</td>
+                    <td>
+                        <form asp-controller="Admin" asp-action="DeleteUnavailablePeriod" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@p.Id" />
+                            <button type="submit" class="clear-btn">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    </table>
+</div>

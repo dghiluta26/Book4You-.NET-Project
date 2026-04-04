@@ -1,0 +1,136 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Book4You</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="~/images/logo2.png">
+
+        <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+     
+    </head>
+    <body>
+        @using Microsoft.AspNetCore.Http
+    @{
+            var userName = Context.Session.GetString("UserName");
+            var userRole = Context.Session.GetString("UserRole") ?? "User";
+        }
+        <header class="navbar">
+            <div class="logo">
+                <a asp-controller="Home" asp-action="Index" class="logo-text">Book4You</a>
+            </div>
+            
+            <nav>
+                <ul class="nav-links">
+                    <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+                    <li><a asp-controller="Accommodation" asp-action="Accommodations">Accommodations</a></li>
+                    <li><a asp-controller="Home" asp-action="About">About</a></li>
+                    <li><a asp-controller="Home" asp-action="Contact">Contact</a></li>
+                    @if ((userRole ?? "User") == "Admin")
+                    {
+                        <li><a asp-controller="Admin" asp-action="Index" class="filter-btn">Admin Panel</a></li>
+                    }
+                    @if (!string.IsNullOrEmpty(userName))
+                    {
+                        <li class="user-dropdown">
+                            <button type="button" class="user-btn">Hello, @userName ▾</button>
+                            <ul class="dropdown-menu">
+                                <li><a asp-controller="Account" asp-action="Profile">My profile</a></li>
+                                <li><a asp-controller="Booking" asp-action="MyBookings">My bookings</a></li>
+                                <li><a asp-controller="Account" asp-action="Logout" class="btn-login">Logout</a></li>
+                            </ul>
+                        </li>
+                    }
+                    else
+                    {
+                        <li><a asp-controller ="Account" asp-action="Login" class="btn-login">Login</a></li>
+                        <li><a asp-controller="Account" asp-action="Signup" class="btn-signup">Sign Up</a></li>
+                    }
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            @RenderBody()
+        </main>
+
+        <footer class="footer">
+            <div class="footer-container">
+                <div class="footer-col">
+                    <div class="footer-brand">
+                        <img src="~/images/logo2.png" alt="Logo" class="footer-logo" />
+                        <p class="footer-text">
+                            Book smart. Travel easy. Find stays, deals and experiences in one
+                            place.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+                        <li><a asp-controller="Accommodation" asp-action="Accommodations">Accommodations</a></li>
+                        <li><a asp-controller="Home" asp-action="About">About</a></li>
+                        <li><a asp-controller="Home" asp-action="Contact">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Cancellation Policy</a></li>
+                        <li><a asp-controller="Home" asp-action="Terms">Terms &amp; Conditions</a></li>
+                        <li><a asp-controller="Home" asp-action="Privacy">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Newsletter</h4>
+                    <p class="footer-text">
+                        Get deals and updates straight to your inbox.
+                    </p>
+                    <form class="footer-form">
+                        <input type="email" placeholder="Email address" required />
+                        <button type="submit">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>© @DateTime.Now.Year Book4You. All rights reserved.</p>
+            </div>
+        </footer>
+
+        <script>
+            (function(){
+                document.addEventListener('DOMContentLoaded', function(){
+                    var userBtn = document.querySelector('.user-btn');
+                    if(!userBtn) return;
+                    var dropdown = userBtn.closest('.user-dropdown');
+
+                    userBtn.addEventListener('click', function(e){
+                        e.preventDefault();
+                        dropdown.classList.toggle('open');
+                    });
+
+                    document.addEventListener('click', function(e){
+                        if (!dropdown.contains(e.target)) {
+                            dropdown.classList.remove('open');
+                        }
+                    });
+
+                    document.addEventListener('keydown', function(e){
+                        if (e.key === 'Escape') dropdown.classList.remove('open');
+                    });
+                });
+            })();
+        </script>
+
+        <script src="~/js/site.js" asp-append-version="true"></script>
+        @await RenderSectionAsync("Scripts", required: false)
+    </body>
+</html>

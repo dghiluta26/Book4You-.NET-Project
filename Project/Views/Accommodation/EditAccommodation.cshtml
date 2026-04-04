@@ -1,0 +1,46 @@
+@model Project.Models.Accommodation
+
+@{
+    ViewData["Title"] = "Edit Accommodation";
+}
+
+<div class="page-hero">
+    <h1>Edit Accommodation</h1>
+</div>
+
+<div class="accommodations-container page" style="max-width:800px; margin: 30px auto;">
+    <form asp-controller="Accommodation" asp-action="EditAccommodation" method="post" class="auth-card">
+        <input type="hidden" name="Id" value="@Model.Id" />
+        <label>Title</label>
+        <input name="Title" value="@Model.Title" />
+
+        <label style="margin-top:8px;">Location</label>
+        <input name="Location" value="@Model.Location" />
+
+        <label style="margin-top:8px;">Address</label>
+        <input name="Address" value="@Model.Address" />
+
+        <label style="margin-top:8px;">Description</label>
+        <textarea name="Description">@Model.Description</textarea>
+
+        <label style="margin-top:8px;">Price per night</label>
+        <input type="number" step="0.01" name="PricePerNight" value="@Model.PricePerNight" />
+
+        <label style="margin-top:8px;">Capacity</label>
+        <input type="number" name="Capacity" value="@Model.Capacity" />
+
+        <label style="margin-top:8px;">Bedrooms</label>
+        <input type="number" name="Bedrooms" value="@Model.Bedrooms" />
+
+        <label style="margin-top:8px;">Bathrooms</label>
+        <input type="number" name="Bathrooms" value="@Model.Bathrooms" />
+
+        <label style="margin-top:8px;">Type</label>
+        <input name="Type" value="@Model.Type" />
+
+        <label style="margin-top:8px;">Image URL</label>
+        <input name="ImageUrl" value="@Model.ImageUrl" />
+
+        <button type="submit" class="auth-btn" style="margin-top:12px;">Save</button>
+    </form>
+</div>

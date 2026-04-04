@@ -1,0 +1,42 @@
+@model List<Project.Models.Booking>
+
+@{
+    ViewData["Title"] = "Bookings";
+}
+
+<div class="page-hero">
+    <h1>Bookings</h1>
+</div>
+
+<div class="admin-area">
+    <table class="admin-table">
+        <thead>
+            <tr style="background:#f1f1f1;"><th style="padding:8px;">User</th><th>Accommodation</th><th>Dates</th><th>Guests</th><th>Total</th><th>Status</th><th></th></tr>
+        </thead>
+        <tbody>
+            @foreach(var b in Model)
+            {
+                <tr>
+                    <td>@b.User?.Email</td>
+                    <td>@b.Accommodation?.Title</td>
+                    <td>@b.CheckInDate.ToShortDateString() - @b.CheckOutDate.ToShortDateString()</td>
+                    <td>@b.Guests</td>
+                    <td>€@b.TotalPrice</td>
+                    <td>@b.Status</td>
+                    <td>
+                        <div class="admin-actions">
+                        @if(b.Status != "Cancelled")
+                        {
+                            <form asp-controller="Admin" asp-action="CancelBooking" method="post" style="display:inline;">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@b.Id" />
+                                <button type="submit" class="clear-btn">Cancel</button>
+                            </form>
+                        }
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

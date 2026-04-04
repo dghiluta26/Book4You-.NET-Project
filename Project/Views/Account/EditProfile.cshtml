@@ -1,0 +1,25 @@
+@model Project.Models.User
+
+@{
+    ViewData["Title"] = "Edit Profile";
+}
+
+<div class="page-hero">
+    <h1>Edit Profile</h1>
+    <p>Update your account information.</p>
+</div>
+
+<div class="accommodations-container page" style="max-width:700px; margin: 30px auto;">
+    <form asp-controller="Account" asp-action="EditProfile" method="post" class="auth-card">
+        <label>First Name</label>
+        <input name="FirstName" value="@Model.FirstName" />
+
+        <label style="margin-top:8px;">Last Name</label>
+        <input name="LastName" value="@Model.LastName" />
+
+        <label style="margin-top:8px;">Address</label>
+        <input name="Address" value="@Model.Address" />
+
+        <button type="submit" class="auth-btn" style="margin-top:12px;">Save</button>
+    </form>
+</div>

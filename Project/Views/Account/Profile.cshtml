@@ -1,0 +1,21 @@
+@model Project.Models.User
+
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="page-hero">
+    <h1>My Profile</h1>
+    <p>Manage your account information.</p>
+</div>
+
+<div class="accommodations-container page" style="max-width:700px; margin: 30px auto;">
+    <div class="auth-card">
+        <h2>@Model.FirstName @Model.LastName</h2>
+        <p><strong>Email:</strong> @Model.Email</p>
+        <p><strong>Address:</strong> @Model.Address</p>
+        <p><strong>Role:</strong> @Model.Role</p>
+
+        <a asp-controller="Account" asp-action="EditProfile" class="filter-btn" style="margin-top:12px; display:inline-block;">Edit Profile</a>
+    </div>
+</div>

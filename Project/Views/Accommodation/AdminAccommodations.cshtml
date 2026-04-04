@@ -1,0 +1,40 @@
+@model List<Project.Models.Accommodation>
+
+@{
+    ViewData["Title"] = "Manage Accommodations";
+}
+
+<div class="page-hero">
+    <h1>Admin: Accommodations</h1>
+</div>
+
+<div class="accommodations-container page" style="max-width:1000px; margin: 30px auto;">
+    <a asp-controller="Accommodation" asp-action="CreateAccommodation" class="filter-btn">Create new</a>
+
+    <table style="width:100%; margin-top:12px; border-collapse: collapse;">
+        <thead>
+            <tr style="background:#f1f1f1;">
+                <th style="padding:8px; text-align:left;">Title</th>
+                <th style="padding:8px; text-align:left;">Location</th>
+                <th style="padding:8px; text-align:left;">Price</th>
+                <th style="padding:8px; text-align:left;">Owner</th>
+                <th style="padding:8px; text-align:left;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var a in Model)
+            {
+                <tr>
+                    <td style="padding:8px;">@a.Title</td>
+                    <td style="padding:8px;">@a.Location</td>
+                    <td style="padding:8px;">€@a.PricePerNight</td>
+                    <td style="padding:8px;">@a.OwnerId</td>
+                    <td style="padding:8px;">
+                        <a asp-controller="Accommodation" asp-action="EditAccommodation" asp-route-id="@a.Id" class="clear-btn">Edit</a>
+                        <a asp-controller="Accommodation" asp-action="DeleteAccommodation" asp-route-id="@a.Id" class="clear-btn">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

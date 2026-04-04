@@ -1,0 +1,28 @@
+@model Project.Models.UnavailablePeriod
+
+@{
+    ViewData["Title"] = "Create Unavailable Period";
+}
+
+<div class="page-hero"><h1>Create Unavailable Period</h1></div>
+
+<div style="max-width:700px; margin:20px auto;">
+    <form asp-controller="Admin" asp-action="CreateUnavailablePeriod" method="post" class="auth-card">
+        @Html.AntiForgeryToken()
+        <label>Accommodation</label>
+        <select name="AccommodationId">
+            @foreach(var a in ViewBag.Accommodations as List<Project.Models.Accommodation>)
+            {
+                <option value="@a.Id">@a.Title</option>
+            }
+        </select>
+
+        <label style="margin-top:8px;">Start Date</label>
+        <input type="date" name="StartDate" />
+
+        <label style="margin-top:8px;">End Date</label>
+        <input type="date" name="EndDate" />
+
+        <button type="submit" class="auth-btn" style="margin-top:12px;">Create</button>
+    </form>
+</div>
