@@ -234,17 +234,13 @@
                     if (!errEl) errEl = document.createElement('div');
 
                     if(data.success){
-                        // show inline success and redirect shortly
                         errEl.style.color = '#1b5e20';
                         errEl.style.display = 'block';
                         errEl.innerText = "You've successfully booked this accommodation!";
-                        // redirect to MyBookings after short delay
                         if(data.redirect) setTimeout(function(){ window.location = data.redirect; }, 900);
                     } else if (data.loginRedirect) {
-                        // redirect to login if not authenticated
                         window.location = data.loginRedirect;
                     } else {
-                        // show inline error
                         errEl.style.color = '#b00020';
                         errEl.style.display = 'block';
                         errEl.innerText = data.message || 'Booking failed';

@@ -159,7 +159,6 @@ namespace Project.Controllers
 
             if (hasDates)
             {
-                // filter out accommodations that have overlapping bookings or unavailable periods in the requested period
                 query = query.Where(a => !_context.Bookings.Any(b => b.AccommodationId == a.Id && b.CheckInDate < requestedCheckOut && b.CheckOutDate > requestedCheckIn)
                                          && !_context.UnavailablePeriods.Any(up => up.AccommodationId == a.Id && up.StartDate < requestedCheckOut && up.EndDate > requestedCheckIn));
             }
