@@ -118,6 +118,79 @@
                         </div>
                     }
                 </div>
+
+                <div class="details-reviews">
+                    <h3>Reviews</h3>
+
+                    @if (TempData["ReviewSuccess"] != null)
+                    {
+                        <div class="success-container review-alert">
+                            @TempData["ReviewSuccess"]
+                        </div>
+                    }
+
+                    @if (TempData["ReviewError"] != null)
+                    {
+                        <div class="error-container review-alert">
+                            @TempData["ReviewError"]
+                        </div>
+                    }
+
+                    @if (Model.Reviews == null || !Model.Reviews.Any())
+                    {
+                        <p class="no-amenities">No reviews yet. Be the first to share your experience.</p>
+                    }
+                    else
+                    {
+                        <div class="reviews-list">
+                            @foreach (var review in Model.Reviews)
+                            {
+                                <article class="review-card">
+                                    <div class="review-card-header">
+                                        <strong>@(review.User?.FirstName ?? "Guest") @(review.User?.LastName ?? string.Empty)</strong>
+                                        <span class="accommodation-rating">★ @review.Rating</span>
+                                    </div>
+                                    <p class="review-date">@review.CreatedAt.ToString("dd MMM yyyy")</p>
+                                    <p class="review-comment">@review.Comment</p>
+                                </article>
+                            }
+                        </div>
+                    }
+
+                    @if (Model.CanLeaveReview)
+                    {
+                        <form asp-controller="Accommodation" asp-action="AddReview" method="post" class="review-form">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="accommodationId" value="@Model.Accommodation.Id" />
+
+                            <label class="review-form-label">
+                                Rating
+                                <select name="rating" required class="review-input">
+                                    <option value="5">5 - Excellent</option>
+                                    <option value="4">4 - Very good</option>
+                                    <option value="3">3 - Good</option>
+                                    <option value="2">2 - Fair</option>
+                                    <option value="1">1 - Poor</option>
+                                </select>
+                            </label>
+
+                            <label class="review-form-label">
+                                Comment
+                                <textarea name="comment" rows="4" maxlength="1000" required placeholder="Share what you liked about your stay..." class="review-input"></textarea>
+                            </label>
+
+                            <button type="submit" class="details-book-btn review-submit-btn">Submit Review</button>
+                        </form>
+                    }
+                    else if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <p class="muted review-info-note">You can leave a review after your stay, or if you have already reviewed this accommodation, thank you for the feedback.</p>
+                    }
+                    else
+                    {
+                        <p class="muted review-info-note">Log in after your stay to leave a review.</p>
+                    }
+                </div>
             </div>
 
         </div>

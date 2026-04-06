@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Project.Filters;
 using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 
 namespace Project.Controllers
@@ -16,6 +17,37 @@ namespace Project.Controllers
         public AccommodationController(AppDbContext context)
         {
             _context = context;
+        }
+
+        private User? GetCurrentUser()
+        {
+            var userEmail = HttpContext.Session.GetString("UserEmail");
+            if (string.IsNullOrEmpty(userEmail))
+            {
+                return null;
+            }
+
+            return _context.Users.FirstOrDefault(u => u.Email == userEmail);
+        }
+
+        private Dictionary<int, decimal> GetAverageRatings(IEnumerable<int> accommodationIds)
+        {
+            var idList = accommodationIds.Distinct().ToList();
+            if (idList.Count == 0)
+            {
+                return new Dictionary<int, decimal>();
+            }
+
+            return _context.Reviews
+                .Where(r => idList.Contains(r.AccommodationId))
+                .GroupBy(r => r.AccommodationId)
+                .Select(g => new
+                {
+                    AccommodationId = g.Key,
+                    AverageRating = g.Average(r => (decimal)r.Rating)
+                })
+                .AsEnumerable()
+                .ToDictionary(x => x.AccommodationId, x => decimal.Round(x.AverageRating, 2));
         }
 
         [HttpGet]
@@ -136,8 +168,20 @@ namespace Project.Controllers
             ViewBag.CheckOut = checkOut;
             ViewBag.Guests = guests;
 
-            var stays = query
+            var stays = query.ToList();
+            var ratingsByAccommodationId = GetAverageRatings(stays.Select(a => a.Id));
+
+            foreach (var stay in stays)
+            {
+                if (ratingsByAccommodationId.TryGetValue(stay.Id, out var averageRating))
+                {
+                    stay.Rating = averageRating;
+                }
+            }
+
+            stays = stays
                 .OrderByDescending(a => a.Rating)
+                .ThenByDescending(a => a.CreatedAt)
                 .ToList();
 
             return View(stays);
@@ -167,14 +211,113 @@ namespace Project.Controllers
                 .OrderBy(i => i.DisplayOrder)
                 .ToList();
 
+            var reviews = _context.Reviews
+                .Include(r => r.User)
+                .Where(r => r.AccommodationId == id)
+                .OrderByDescending(r => r.CreatedAt)
+                .ToList();
+
+            var ratingsByAccommodationId = GetAverageRatings(new[] { id });
+            if (ratingsByAccommodationId.TryGetValue(id, out var averageRating))
+            {
+                accommodation.Rating = averageRating;
+            }
+
+            var currentUser = GetCurrentUser();
+            var canLeaveReview = false;
+            var hasReviewed = false;
+
+            if (currentUser != null)
+            {
+                hasReviewed = reviews.Any(r => r.UserId == currentUser.Id);
+                canLeaveReview = !hasReviewed && _context.Bookings.Any(b =>
+                    b.UserId == currentUser.Id &&
+                    b.AccommodationId == id &&
+                    b.Status != "Cancelled" &&
+                    b.CheckOutDate.Date <= DateTime.Today);
+            }
+
             var viewModel = new AccommodationDetailsViewModel
             {
                 Accommodation = accommodation,
                 Amenities = amenities,
-                Images = images
+                Images = images,
+                Reviews = reviews,
+                CanLeaveReview = canLeaveReview,
+                HasReviewed = hasReviewed
             };
 
             return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddReview(int accommodationId, int rating, string comment)
+        {
+            var currentUser = GetCurrentUser();
+            if (currentUser == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var accommodation = _context.Accommodations.FirstOrDefault(a => a.Id == accommodationId);
+            if (accommodation == null)
+            {
+                return NotFound();
+            }
+
+            var hasStayed = _context.Bookings.Any(b =>
+                b.UserId == currentUser.Id &&
+                b.AccommodationId == accommodationId &&
+                b.Status != "Cancelled" &&
+                b.CheckOutDate.Date <= DateTime.Today);
+
+            if (!hasStayed)
+            {
+                TempData["ReviewError"] = "You can leave a review after your stay.";
+                return RedirectToAction("AccommodationDetails", new { id = accommodationId });
+            }
+
+            var hasReviewed = _context.Reviews.Any(r => r.UserId == currentUser.Id && r.AccommodationId == accommodationId);
+            if (hasReviewed)
+            {
+                TempData["ReviewError"] = "You have already reviewed this accommodation.";
+                return RedirectToAction("AccommodationDetails", new { id = accommodationId });
+            }
+
+            comment = (comment ?? string.Empty).Trim();
+            if (rating < 1 || rating > 5)
+            {
+                TempData["ReviewError"] = "Please choose a rating from 1 to 5.";
+                return RedirectToAction("AccommodationDetails", new { id = accommodationId });
+            }
+
+            if (string.IsNullOrWhiteSpace(comment))
+            {
+                TempData["ReviewError"] = "Please write a comment for your review.";
+                return RedirectToAction("AccommodationDetails", new { id = accommodationId });
+            }
+
+            if (comment.Length > 1000)
+            {
+                TempData["ReviewError"] = "Your review comment must be 1000 characters or less.";
+                return RedirectToAction("AccommodationDetails", new { id = accommodationId });
+            }
+
+            var review = new Review
+            {
+                UserId = currentUser.Id,
+                AccommodationId = accommodationId,
+                Rating = rating,
+                Comment = comment,
+                CreatedAt = DateTime.Now
+            };
+
+            _context.Reviews.Add(review);
+            _context.SaveChanges();
+
+            TempData["ReviewSuccess"] = "Thanks for sharing your review.";
+            return RedirectToAction("AccommodationDetails", new { id = accommodationId });
         }
     }
 }
