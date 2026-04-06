@@ -1,4 +1,4 @@
-@model Project.Models.UnavailablePeriod
+@model Project.Models.CreateUnavailablePeriodViewModel
 
 @{
     ViewData["Title"] = "Create Unavailable Period";
@@ -10,18 +10,19 @@
     <form asp-controller="Admin" asp-action="CreateUnavailablePeriod" method="post" class="auth-card">
         @Html.AntiForgeryToken()
         <label>Accommodation</label>
-        <select name="AccommodationId">
-            @foreach(var a in ViewBag.Accommodations as List<Project.Models.Accommodation>)
+        <select name="UnavailablePeriod.AccommodationId">
+            @{ var accommodations = ViewData["Accommodations"] as List<Project.Models.Accommodation> ?? new List<Project.Models.Accommodation>(); }
+            @foreach (var a in accommodations)
             {
                 <option value="@a.Id">@a.Title</option>
             }
         </select>
 
         <label style="margin-top:8px;">Start Date</label>
-        <input type="date" name="StartDate" />
+        <input type="date" name="UnavailablePeriod.StartDate" />
 
         <label style="margin-top:8px;">End Date</label>
-        <input type="date" name="EndDate" />
+        <input type="date" name="UnavailablePeriod.EndDate" />
 
         <button type="submit" class="auth-btn" style="margin-top:12px;">Create</button>
     </form>

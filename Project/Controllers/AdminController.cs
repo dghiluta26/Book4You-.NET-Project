@@ -74,28 +74,36 @@ namespace Project.Controllers
 
         public IActionResult CreateUnavailablePeriod()
         {
-            ViewBag.Accommodations = _context.Accommodations.OrderBy(a => a.Title).ToList();
-            return View();
+            var viewModel = new CreateUnavailablePeriodViewModel
+            {
+                Accommodations = _context.Accommodations.OrderBy(a => a.Title).ToList()
+            };
+
+            ViewData["Accommodations"] = viewModel.Accommodations;
+
+            return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult CreateUnavailablePeriod(UnavailablePeriod model)
+        public IActionResult CreateUnavailablePeriod(CreateUnavailablePeriodViewModel viewModel)
         {
             if (!ModelState.IsValid)
             {
-                ViewBag.Accommodations = _context.Accommodations.OrderBy(a => a.Title).ToList();
-                return View(model);
+                viewModel.Accommodations = _context.Accommodations.OrderBy(a => a.Title).ToList();
+                ViewData["Accommodations"] = viewModel.Accommodations;
+                return View(viewModel);
             }
 
-            if (model.StartDate >= model.EndDate)
+            if (viewModel.UnavailablePeriod.StartDate >= viewModel.UnavailablePeriod.EndDate)
             {
                 ModelState.AddModelError(string.Empty, "End date must be after start date.");
-                ViewBag.Accommodations = _context.Accommodations.OrderBy(a => a.Title).ToList();
-                return View(model);
+                viewModel.Accommodations = _context.Accommodations.OrderBy(a => a.Title).ToList();
+                ViewData["Accommodations"] = viewModel.Accommodations;
+                return View(viewModel);
             }
 
-            _context.Set<UnavailablePeriod>().Add(model);
+            _context.Set<UnavailablePeriod>().Add(viewModel.UnavailablePeriod);
             _context.SaveChanges();
             return RedirectToAction("UnavailablePeriods");
         }
