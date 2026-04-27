@@ -2,6 +2,10 @@
 
 @{
     ViewData["Title"] = "My Profile";
+    var defaultAvatar = Url.Content("~/images/users/default-avatar.svg");
+    var profilePicture = string.IsNullOrWhiteSpace(Model.ProfilePictureUrl)
+        ? defaultAvatar
+        : Model.ProfilePictureUrl;
 }
 
 <div class="page-hero">
@@ -9,13 +13,44 @@
     <p>Manage your account information.</p>
 </div>
 
-<div class="accommodations-container page" style="max-width:700px; margin: 30px auto;">
-    <div class="auth-card">
-        <h2>@Model.FirstName @Model.LastName</h2>
-        <p><strong>Email:</strong> @Model.Email</p>
-        <p><strong>Address:</strong> @Model.Address</p>
-        <p><strong>Role:</strong> @Model.Role</p>
+<div class="profile-page page">
+    <div class="profile-layout">
+        <section class="profile-card profile-card--summary">
+            <div class="profile-avatar profile-avatar--large">
+                <img src="@profilePicture" alt="Profile picture of @Model.FirstName @Model.LastName" onerror="this.onerror=null;this.src='@defaultAvatar';" />
+            </div>
 
-        <a asp-controller="Account" asp-action="EditProfile" class="filter-btn" style="margin-top:12px; display:inline-block;">Edit Profile</a>
+            <div class="profile-summary-text">
+                <span class="profile-role">@Model.Role</span>
+                <h2>@Model.FirstName @Model.LastName</h2>
+                <p>@(string.IsNullOrWhiteSpace(Model.Address) ? "No address added yet." : Model.Address)</p>
+            </div>
+
+            <a asp-controller="Account" asp-action="EditProfile" class="profile-edit-link">Edit Profile</a>
+        </section>
+
+        <section class="profile-card profile-card--details">
+            <h3>Account details</h3>
+
+            <div class="profile-details-grid">
+                <div class="profile-detail-item">
+                    <span>Email</span>
+                    <strong>@Model.Email</strong>
+                </div>
+
+                <div class="profile-detail-item">
+                    <span>Address</span>
+                    <strong>@(string.IsNullOrWhiteSpace(Model.Address) ? "Not set" : Model.Address)</strong>
+                </div>
+
+                <div class="profile-detail-item">
+                    <span>Role</span>
+                    <strong>@Model.Role</strong>
+                </div>
+
+                
+
+            </div>
+        </section>
     </div>
 </div>

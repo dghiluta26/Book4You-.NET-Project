@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
 using Project.Data;
 
 
@@ -17,6 +18,17 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    try
+    {
+        db.Database.Migrate();
+    }
+    catch (SqlException) when (app.Environment.IsDevelopment())
+    {
+        db.Database.EnsureDeleted();
+        db.Database.Migrate();
+    }
+
     DbSeeder.Seed(db);
 }
 
@@ -27,6 +39,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseRouting();
 
 app.UseSession();

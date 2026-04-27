@@ -1,4 +1,5 @@
-﻿using Project.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Project.Models;
 
 namespace Project.Data
 {
@@ -6,9 +7,8 @@ namespace Project.Data
     {
         public static void Seed(AppDbContext context)
         {
-            context.Database.EnsureCreated();
+            EnsureProfilePictureColumn(context);
 
-           
             if (!context.Amenities.Any())
             {
                 var amenities = new List<Amenity>
@@ -434,6 +434,19 @@ namespace Project.Data
 
                 context.SaveChanges();
             }
+        }
+
+        private static void EnsureProfilePictureColumn(AppDbContext context)
+        {
+            context.Database.ExecuteSqlRaw(@"
+IF COL_LENGTH('dbo.Users', 'ProfilePictureUrl') IS NULL
+BEGIN
+    ALTER TABLE [dbo].[Users] ADD [ProfilePictureUrl] nvarchar(max) NULL;
+END
+ELSE
+BEGIN
+    ALTER TABLE [dbo].[Users] ALTER COLUMN [ProfilePictureUrl] nvarchar(max) NULL;
+END");
         }
     }
 }

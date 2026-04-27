@@ -12,10 +12,10 @@ namespace Project.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Accomodations",
+                name: "Accommodations",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
                     Location = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
@@ -33,7 +33,7 @@ namespace Project.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Accomodations", x => x.id);
+                    table.PrimaryKey("PK_Accommodations", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -58,7 +58,7 @@ namespace Project.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Accomodations");
+                name: "Accommodations");
 
             migrationBuilder.DropTable(
                 name: "Users");

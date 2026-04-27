@@ -2,6 +2,10 @@
 
 @{
     ViewData["Title"] = "Edit Profile";
+    var defaultAvatar = Url.Content("~/images/users/default-avatar.svg");
+    var profilePicture = string.IsNullOrWhiteSpace(Model.ProfilePictureUrl)
+        ? defaultAvatar
+        : Model.ProfilePictureUrl;
 }
 
 <div class="page-hero">
@@ -9,17 +13,40 @@
     <p>Update your account information.</p>
 </div>
 
-<div class="accommodations-container page" style="max-width:700px; margin: 30px auto;">
-    <form asp-controller="Account" asp-action="EditProfile" method="post" class="auth-card">
-        <label>First Name</label>
-        <input name="FirstName" value="@Model.FirstName" />
+<div class="profile-page page">
+    <div class="profile-layout">
+        <section class="profile-card profile-card--summary">
+            <div class="profile-avatar profile-avatar--large">
+                <img src="@profilePicture" alt="Profile picture preview" onerror="this.onerror=null;this.src='@defaultAvatar';" />
+            </div>
 
-        <label style="margin-top:8px;">Last Name</label>
-        <input name="LastName" value="@Model.LastName" />
+            <div class="profile-summary-text">
+                <span class="profile-role">Preview</span>
+                <h2>@Model.FirstName @Model.LastName</h2>
+                <p>Your avatar and details will appear here.</p>
+            </div>
+        </section>
 
-        <label style="margin-top:8px;">Address</label>
-        <input name="Address" value="@Model.Address" />
+        <form asp-controller="Account" asp-action="EditProfile" method="post" enctype="multipart/form-data" class="profile-card profile-form">
+            <h3>Personal information</h3>
 
-        <button type="submit" class="auth-btn" style="margin-top:12px;">Save</button>
-    </form>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <label for="FirstName">First Name</label>
+            <input id="FirstName" name="FirstName" value="@Model.FirstName" />
+
+            <label for="LastName">Last Name</label>
+            <input id="LastName" name="LastName" value="@Model.LastName" />
+
+            <label for="Address">Address</label>
+            <input id="Address" name="Address" value="@Model.Address" />
+
+            <label for="ProfilePictureFile">Profile picture</label>
+            <input id="ProfilePictureFile" name="ProfilePictureFile" type="file" accept="image/*" />
+            <span asp-validation-for="ProfilePictureFile" class="text-danger"></span>
+            <small class="profile-form-help">Upload a JPG, PNG, GIF, or WEBP file to replace your current avatar.</small>
+
+            <button type="submit" class="profile-save-btn">Save changes</button>
+        </form>
+    </div>
 </div>

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Project.Models;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace Project.Controllers
 {
@@ -67,11 +68,41 @@ namespace Project.Controllers
             user.LastName = model.LastName;
             user.Address = model.Address;
 
-            _context.SaveChanges();
+            try
+            {
+                if (model.ProfilePictureFile != null && model.ProfilePictureFile.Length > 0)
+                {
+                    var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+                    var extension = Path.GetExtension(model.ProfilePictureFile.FileName).ToLowerInvariant();
+                    var contentType = model.ProfilePictureFile.ContentType?.Trim() ?? string.Empty;
 
-            HttpContext.Session.SetString("UserName", user.FirstName);
+                    if (!allowedExtensions.Contains(extension) || !contentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
+                    {
+                        ModelState.AddModelError(nameof(model.ProfilePictureFile), "Only JPG, PNG, GIF, and WEBP images are allowed.");
+                        return View(user);
+                    }
 
-            return RedirectToAction("Profile");
+                    if (model.ProfilePictureFile.Length > 2 * 1024 * 1024)
+                    {
+                        ModelState.AddModelError(nameof(model.ProfilePictureFile), "Profile pictures must be 2 MB or smaller.");
+                        return View(user);
+                    }
+
+                    using var memoryStream = new MemoryStream();
+                    model.ProfilePictureFile.CopyTo(memoryStream);
+                    user.ProfilePictureUrl = $"data:{contentType};base64,{Convert.ToBase64String(memoryStream.ToArray())}";
+                }
+                _context.SaveChanges();
+
+                HttpContext.Session.SetString("UserName", user.FirstName);
+
+                return RedirectToAction("Profile");
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError(string.Empty, "The profile could not be saved right now. Please try again.");
+                return View(user);
+            }
         }
 
         [HttpGet]
