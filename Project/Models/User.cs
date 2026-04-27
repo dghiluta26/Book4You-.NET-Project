@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Http;
 
 namespace Project.Models
 {
@@ -29,9 +28,6 @@ namespace Project.Models
         public string? Address { get; set; }
 
         public string? ProfilePictureUrl { get; set; }
-
-        [NotMapped]
-        public IFormFile? ProfilePictureFile { get; set; }
 
         [MaxLength(50)]
         public string Role { get; set; } = "User"; // User or Admin

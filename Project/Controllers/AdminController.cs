@@ -1,19 +1,18 @@
 using Microsoft.AspNetCore.Mvc;
-using Project.Data;
 using Project.Filters;
-using Microsoft.EntityFrameworkCore;
 using Project.Models;
+using Project.Services;
 
 namespace Project.Controllers
 {
     [RequireAdmin]
     public class AdminController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IAdminService _adminService;
 
-        public AdminController(AppDbContext context)
+        public AdminController(IAdminService adminService)
         {
-            _context = context;
+            _adminService = adminService;
         }
 
         public IActionResult Index()
@@ -23,64 +22,53 @@ namespace Project.Controllers
 
         public IActionResult Bookings()
         {
-            var bookings = _context.Bookings
-                .Include(b => b.Accommodation)
-                .Include(b => b.User)
-                .OrderByDescending(b => b.CreatedAt)
-                .ToList();
-
-            return View(bookings);
+            return View(_adminService.GetBookings());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult CancelBooking(int id)
         {
-            var booking = _context.Bookings.FirstOrDefault(b => b.Id == id);
-            if (booking == null) return NotFound();
-
-            booking.Status = "Cancelled";
-            _context.SaveChanges();
-
-            return RedirectToAction("Bookings");
+            try
+            {
+                _adminService.CancelBooking(id);
+                return RedirectToAction("Bookings");
+            }
+            catch (InvalidOperationException)
+            {
+                return NotFound();
+            }
         }
 
         public IActionResult Users()
         {
-            var users = _context.Users.OrderBy(u => u.Email).ToList();
-            return View(users);
+            return View(_adminService.GetUsers());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult ToggleRole(int id)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Id == id);
-            if (user == null) return NotFound();
-
-            user.Role = user.Role == "Admin" ? "User" : "Admin";
-            _context.SaveChanges();
-            return RedirectToAction("Users");
+            try
+            {
+                _adminService.ToggleRole(id);
+                return RedirectToAction("Users");
+            }
+            catch (InvalidOperationException)
+            {
+                return NotFound();
+            }
         }
 
         public IActionResult UnavailablePeriods()
         {
-            var periods = _context.Set<UnavailablePeriod>()
-                .OrderByDescending(p => p.StartDate)
-                .ToList();
-
-            return View(periods);
+            return View(_adminService.GetUnavailablePeriods());
         }
 
         public IActionResult CreateUnavailablePeriod()
         {
-            var viewModel = new CreateUnavailablePeriodViewModel
-            {
-                Accommodations = _context.Accommodations.OrderBy(a => a.Title).ToList()
-            };
-
+            var viewModel = _adminService.GetCreateUnavailablePeriodViewModel();
             ViewData["Accommodations"] = viewModel.Accommodations;
-
             return View(viewModel);
         }
 
@@ -90,33 +78,40 @@ namespace Project.Controllers
         {
             if (!ModelState.IsValid)
             {
-                viewModel.Accommodations = _context.Accommodations.OrderBy(a => a.Title).ToList();
-                ViewData["Accommodations"] = viewModel.Accommodations;
-                return View(viewModel);
+                var reloadModel = _adminService.GetCreateUnavailablePeriodViewModel();
+                reloadModel.UnavailablePeriod = viewModel.UnavailablePeriod;
+                ViewData["Accommodations"] = reloadModel.Accommodations;
+                return View(reloadModel);
             }
 
-            if (viewModel.UnavailablePeriod.StartDate >= viewModel.UnavailablePeriod.EndDate)
+            try
             {
-                ModelState.AddModelError(string.Empty, "End date must be after start date.");
-                viewModel.Accommodations = _context.Accommodations.OrderBy(a => a.Title).ToList();
-                ViewData["Accommodations"] = viewModel.Accommodations;
-                return View(viewModel);
+                _adminService.CreateUnavailablePeriod(viewModel.UnavailablePeriod, "Created from admin panel");
+                return RedirectToAction("UnavailablePeriods");
             }
-
-            _context.Set<UnavailablePeriod>().Add(viewModel.UnavailablePeriod);
-            _context.SaveChanges();
-            return RedirectToAction("UnavailablePeriods");
+            catch (ArgumentException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                var reloadModel = _adminService.GetCreateUnavailablePeriodViewModel();
+                reloadModel.UnavailablePeriod = viewModel.UnavailablePeriod;
+                ViewData["Accommodations"] = reloadModel.Accommodations;
+                return View(reloadModel);
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteUnavailablePeriod(int id)
         {
-            var p = _context.Set<UnavailablePeriod>().FirstOrDefault(x => x.Id == id);
-            if (p == null) return NotFound();
-            _context.Set<UnavailablePeriod>().Remove(p);
-            _context.SaveChanges();
-            return RedirectToAction("UnavailablePeriods");
+            try
+            {
+                _adminService.DeleteUnavailablePeriod(id);
+                return RedirectToAction("UnavailablePeriods");
+            }
+            catch (InvalidOperationException)
+            {
+                return NotFound();
+            }
         }
     }
 }

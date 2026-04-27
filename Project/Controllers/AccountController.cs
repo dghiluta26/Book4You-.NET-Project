@@ -1,20 +1,20 @@
-using Microsoft.AspNetCore.Mvc;
-using Project.Data;
-using Microsoft.AspNetCore.Identity;
-using Project.Models;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
-using System.IO;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Project.Models;
+using Project.Services;
 
 namespace Project.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IAccountService _accountService;
+        private readonly IUserService _userService;
 
-        public AccountController(AppDbContext context)
+        public AccountController(IAccountService accountService, IUserService userService)
         {
-            _context = context;
+            _accountService = accountService;
+            _userService = userService;
         }
 
         public IActionResult Profile()
@@ -23,7 +23,7 @@ namespace Project.Controllers
             if (string.IsNullOrEmpty(userEmail))
                 return RedirectToAction("Login");
 
-            var user = _context.Users.FirstOrDefault(u => u.Email == userEmail);
+            var user = _accountService.GetByEmail(userEmail);
             if (user == null)
             {
                 HttpContext.Session.Clear();
@@ -40,68 +40,46 @@ namespace Project.Controllers
             if (string.IsNullOrEmpty(userEmail))
                 return RedirectToAction("Login");
 
-            var user = _context.Users.FirstOrDefault(u => u.Email == userEmail);
+            var user = _accountService.GetByEmail(userEmail);
             if (user == null)
             {
                 HttpContext.Session.Clear();
                 return RedirectToAction("Login");
             }
 
-            return View(user);
+            return View(new EditProfileViewModel
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Address = user.Address,
+                ProfilePictureUrl = user.ProfilePictureUrl
+            });
         }
 
         [HttpPost]
-        public IActionResult EditProfile(User model)
+        public IActionResult EditProfile(EditProfileViewModel model)
         {
             var userEmail = HttpContext.Session.GetString("UserEmail");
             if (string.IsNullOrEmpty(userEmail))
                 return RedirectToAction("Login");
 
-            var user = _context.Users.FirstOrDefault(u => u.Email == userEmail);
+            var user = _accountService.GetByEmail(userEmail);
             if (user == null)
             {
                 HttpContext.Session.Clear();
                 return RedirectToAction("Login");
             }
 
-            user.FirstName = model.FirstName;
-            user.LastName = model.LastName;
-            user.Address = model.Address;
-
             try
             {
-                if (model.ProfilePictureFile != null && model.ProfilePictureFile.Length > 0)
-                {
-                    var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
-                    var extension = Path.GetExtension(model.ProfilePictureFile.FileName).ToLowerInvariant();
-                    var contentType = model.ProfilePictureFile.ContentType?.Trim() ?? string.Empty;
-
-                    if (!allowedExtensions.Contains(extension) || !contentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
-                    {
-                        ModelState.AddModelError(nameof(model.ProfilePictureFile), "Only JPG, PNG, GIF, and WEBP images are allowed.");
-                        return View(user);
-                    }
-
-                    if (model.ProfilePictureFile.Length > 2 * 1024 * 1024)
-                    {
-                        ModelState.AddModelError(nameof(model.ProfilePictureFile), "Profile pictures must be 2 MB or smaller.");
-                        return View(user);
-                    }
-
-                    using var memoryStream = new MemoryStream();
-                    model.ProfilePictureFile.CopyTo(memoryStream);
-                    user.ProfilePictureUrl = $"data:{contentType};base64,{Convert.ToBase64String(memoryStream.ToArray())}";
-                }
-                _context.SaveChanges();
-
+                _accountService.UpdateProfile(user, model.FirstName, model.LastName, model.Address);
                 HttpContext.Session.SetString("UserName", user.FirstName);
-
                 return RedirectToAction("Profile");
             }
             catch (Exception)
             {
                 ModelState.AddModelError(string.Empty, "The profile could not be saved right now. Please try again.");
-                return View(user);
+                return View(model);
             }
         }
 
@@ -118,7 +96,7 @@ namespace Project.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            var user = _context.Users.FirstOrDefault(u => u.Email == model.Email);
+            var user = _userService.GetByEmail(model.Email);
             if (user == null)
             {
                 ModelState.AddModelError(string.Empty, "Email sau parola incorecta.");
@@ -152,12 +130,12 @@ namespace Project.Controllers
         {
             model.Email = (model.Email?.Trim() ?? string.Empty).ToLower();
             model.FirstName = model.FirstName?.Trim() ?? string.Empty;
-            model.LastName = (model.LastName?.Trim() ?? string.Empty);
+            model.LastName = model.LastName?.Trim() ?? string.Empty;
             model.Address = model.Address?.Trim();
             if (!ModelState.IsValid)
                 return View(model);
 
-            if (_context.Users.Any(u => u.Email == model.Email))
+            if (_userService.GetByEmail(model.Email) != null)
             {
                 ModelState.AddModelError("Email", "Exista deja un cont cu acest email.");
                 return View(model);
@@ -173,8 +151,8 @@ namespace Project.Controllers
             var hasher = new PasswordHasher<User>();
             user.Password = hasher.HashPassword(user, model.Password);
 
-            _context.Users.Add(user);
-            _context.SaveChanges();
+            _userService.Add(user);
+            _userService.SaveChanges();
 
             return RedirectToAction("Login");
         }
