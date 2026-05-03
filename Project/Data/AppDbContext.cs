@@ -32,5 +32,6 @@ namespace Project.Data
         public DbSet<AccommodationImage> AccommodationImages { get; set; }
         public DbSet<Project.Models.UnavailableDate> UnavailableDates { get; set; }
         public DbSet<Project.Models.UnavailablePeriod> UnavailablePeriods { get; set; }
+        public DbSet<ContactMessage> ContactMessages { get; set; }
     }
 }

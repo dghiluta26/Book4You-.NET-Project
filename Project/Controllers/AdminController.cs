@@ -20,6 +20,41 @@ namespace Project.Controllers
             return View();
         }
 
+        public IActionResult ContactMessages()
+        {
+            return View(_adminService.GetContactMessages());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult MarkContactMessageAsRead(int id)
+        {
+            try
+            {
+                _adminService.MarkContactMessageAsRead(id);
+                return RedirectToAction(nameof(ContactMessages));
+            }
+            catch (InvalidOperationException)
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteContactMessage(int id)
+        {
+            try
+            {
+                _adminService.DeleteContactMessage(id);
+                return RedirectToAction(nameof(ContactMessages));
+            }
+            catch (InvalidOperationException)
+            {
+                return NotFound();
+            }
+        }
+
         public IActionResult Bookings()
         {
             return View(_adminService.GetBookings());

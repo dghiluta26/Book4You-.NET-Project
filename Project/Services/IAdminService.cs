@@ -12,4 +12,7 @@ public interface IAdminService
     CreateUnavailablePeriodViewModel GetCreateUnavailablePeriodViewModel();
     void CreateUnavailablePeriod(UnavailablePeriod unavailablePeriod, string reason);
     void DeleteUnavailablePeriod(int id);
+    List<ContactMessage> GetContactMessages();
+    void MarkContactMessageAsRead(int id);
+    void DeleteContactMessage(int id);
 }

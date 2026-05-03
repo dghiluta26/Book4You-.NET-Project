@@ -1,16 +1,16 @@
 using Microsoft.AspNetCore.Mvc;
-using Project.Data;
 using Project.Models;
+using Project.Services;
 
 namespace Project.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IContactService _contactService;
 
-        public HomeController(AppDbContext context)
+        public HomeController(IContactService contactService)
         {
-            _context = context;
+            _contactService = contactService;
         }
 
         public IActionResult Index()
@@ -23,9 +23,22 @@ namespace Project.Controllers
             return View();
         }
 
+        [HttpGet]
         public IActionResult Contact()
         {
-            return View();
+            return View(new ContactMessage());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Contact(ContactMessage model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            _contactService.Submit(model);
+            TempData["ContactSuccess"] = "Your message was sent successfully.";
+            return RedirectToAction(nameof(Contact));
         }
 
         public IActionResult Terms()
@@ -34,6 +47,16 @@ namespace Project.Controllers
         }
 
         public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        public IActionResult HelpCenter()
+        {
+            return View();
+        }
+
+        public IActionResult CancellationPolicy()
         {
             return View();
         }

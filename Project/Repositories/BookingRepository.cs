@@ -48,6 +48,6 @@ public class BookingRepository : IBookingRepository
             b.UserId == userId &&
             b.AccommodationId == accommodationId &&
             b.Status != "Cancelled" &&
-            b.CheckOutDate.Date <= DateTime.Today);
+            b.CheckOutDate.Date < DateTime.Today);
     }
 }

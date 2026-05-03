@@ -19,12 +19,14 @@ builder.Services.AddScoped<IAccommodationRepository, AccommodationRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddScoped<IUnavailablePeriodRepository, UnavailablePeriodRepository>();
+builder.Services.AddScoped<IContactMessageRepository, ContactMessageRepository>();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IAccommodationService, AccommodationService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IContactService, ContactService>();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddSession();

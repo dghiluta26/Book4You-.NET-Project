@@ -26,6 +26,6 @@ namespace Project.Models
         public bool IsAvailable { get; set; }
 
         public DateTime CreatedAt { get; set; }
-        public int OwnerId { get; set; } // user who created the accommodation
+        public int OwnerId { get; set; } 
     }
 }

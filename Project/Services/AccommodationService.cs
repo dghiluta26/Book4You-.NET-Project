@@ -1,3 +1,5 @@
+using System.Linq;
+using Microsoft.AspNetCore.Hosting;
 using Project.Models;
 using Project.Repositories;
 
@@ -9,17 +11,20 @@ public class AccommodationService : IAccommodationService
     private readonly IBookingRepository _bookingRepository;
     private readonly IReviewRepository _reviewRepository;
     private readonly IUnavailablePeriodRepository _unavailablePeriodRepository;
+    private readonly IWebHostEnvironment _environment;
 
     public AccommodationService(
         IAccommodationRepository accommodationRepository,
         IBookingRepository bookingRepository,
         IReviewRepository reviewRepository,
-        IUnavailablePeriodRepository unavailablePeriodRepository)
+        IUnavailablePeriodRepository unavailablePeriodRepository,
+        IWebHostEnvironment environment)
     {
         _accommodationRepository = accommodationRepository;
         _bookingRepository = bookingRepository;
         _reviewRepository = reviewRepository;
         _unavailablePeriodRepository = unavailablePeriodRepository;
+        _environment = environment;
     }
 
     public List<Accommodation> GetAllForAdmin() => _accommodationRepository.GetAllForAdmin();
@@ -67,6 +72,10 @@ public class AccommodationService : IAccommodationService
             {
                 stay.Rating = averageRating;
             }
+            else
+            {
+                stay.Rating = 0m;
+            }
         }
 
         return stays.OrderByDescending(a => a.Rating).ThenByDescending(a => a.CreatedAt).ToList();
@@ -89,6 +98,10 @@ public class AccommodationService : IAccommodationService
         {
             accommodation.Rating = averageRating;
         }
+        else
+        {
+            accommodation.Rating = 0m;
+        }
 
         var canLeaveReview = false;
         var hasReviewed = false;
@@ -96,7 +109,7 @@ public class AccommodationService : IAccommodationService
         if (currentUserId.HasValue)
         {
             hasReviewed = _reviewRepository.HasUserReviewed(currentUserId.Value, id);
-            canLeaveReview = !hasReviewed && _bookingRepository.HasUserStayed(currentUserId.Value, id);
+            canLeaveReview = !hasReviewed && CanLeaveReview(currentUserId.Value, id);
         }
 
         return new AccommodationDetailsViewModel
@@ -180,7 +193,10 @@ public class AccommodationService : IAccommodationService
 
         if (!_bookingRepository.HasUserStayed(userId, accommodationId))
         {
-            throw new InvalidOperationException("You can leave a review after your stay.");
+            if (!_environment.IsDevelopment() || !HasAnyNonCancelledBooking(userId, accommodationId))
+            {
+                throw new InvalidOperationException("You can leave a review after your stay.");
+            }
         }
 
         if (_reviewRepository.HasUserReviewed(userId, accommodationId))
@@ -199,5 +215,21 @@ public class AccommodationService : IAccommodationService
 
         _reviewRepository.Add(review);
         _reviewRepository.SaveChanges();
+    }
+
+    private bool CanLeaveReview(int userId, int accommodationId)
+    {
+        if (_bookingRepository.HasUserStayed(userId, accommodationId))
+        {
+            return true;
+        }
+
+        return _environment.IsDevelopment() && HasAnyNonCancelledBooking(userId, accommodationId);
+    }
+
+    private bool HasAnyNonCancelledBooking(int userId, int accommodationId)
+    {
+        return _bookingRepository.GetByUserId(userId)
+            .Any(b => b.AccommodationId == accommodationId && b.Status != "Cancelled");
     }
 }

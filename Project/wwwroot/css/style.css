@@ -638,38 +638,6 @@ main {
         opacity: 0.9;
     }
 
-.about-section {
-    padding: 70px 20px;
-}
-
-.about-container {
-    max-width: 850px;
-    margin: 0 auto;
-    color: #222;
-    font-size: 16px;
-    line-height: 1.9;
-}
-
-    .about-container h2 {
-        margin-top: 40px;
-        margin-bottom: 12px;
-        font-size: 26px;
-        color: #385144;
-    }
-
-    .about-container p {
-        margin-bottom: 18px;
-    }
-
-    .about-container ul {
-        padding-left: 22px;
-        margin-bottom: 20px;
-    }
-
-    .about-container li {
-        margin-bottom: 8px;
-    }
-
 .contact-section {
     padding: 70px 20px;
 }
@@ -694,16 +662,23 @@ main {
         color: #385144;
     }
 
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
 .contact-form label {
     display: block;
-    margin-bottom: 14px;
     font-size: 14px;
+    color: #333;
+    margin-bottom: 0;
 }
 
 .contact-form input,
 .contact-form textarea {
     width: 100%;
-    margin-top: 6px;
+    margin-top: 8px;
     padding: 12px;
     border-radius: 8px;
     border: 1px solid rgba(0,0,0,0.15);
@@ -733,7 +708,10 @@ main {
     }
 
 .contact-info {
-    padding: 20px;
+    padding: 30px;
+    background: rgba(255,255,255,0.7);
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.04);
 }
 
     .contact-info h2 {
@@ -746,9 +724,26 @@ main {
         line-height: 1.6;
     }
 
+.map-container {
+    margin-top: 22px;
+    overflow: hidden;
+    border-radius: 14px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.map-container iframe {
+    width: 100%;
+    display: block;
+}
+
 @media (max-width: 900px) {
     .contact-container {
         grid-template-columns: 1fr;
+    }
+
+    .contact-form-wrapper,
+    .contact-info {
+        padding: 22px;
     }
 
     .profile-layout {
@@ -764,57 +759,16 @@ main {
     }
 }
 
-.terms-section {
-    background: #f8f5f2;
-    padding: 70px 20px;
-}
-
-.terms-container {
-    max-width: 850px;
-    margin: 0 auto;
-    color: #222;
-    font-size: 16px;
-    line-height: 1.9;
-}
-
-    .terms-container h2 {
-        margin-top: 34px;
-        margin-bottom: 10px;
-        font-size: 24px;
-        color: #385144;
-    }
-
-    .terms-container p {
-        margin-bottom: 14px;
-    }
-
-    .terms-container ul {
-        padding-left: 22px;
-        margin-bottom: 18px;
-    }
-
-    .terms-container li {
-        margin-bottom: 8px;
-    }
-
-.terms-note {
-    margin-top: 28px;
-    padding: 14px 16px;
-    border-left: 4px solid #385144;
-    background: rgba(56, 81, 68, 0.08);
-    border-radius: 10px;
-}
-
 .muted {
     opacity: 0.75;
 }
 
-.privacy-section {
+.info-page-section {
     background: #f8f5f2;
     padding: 70px 20px;
 }
 
-.privacy-container {
+.info-page-container {
     max-width: 850px;
     margin: 0 auto;
     color: #222;
@@ -822,32 +776,42 @@ main {
     line-height: 1.9;
 }
 
-    .privacy-container h2 {
-        margin-top: 34px;
-        margin-bottom: 10px;
-        font-size: 24px;
-        color: #385144;
-    }
+.info-page-container h2 {
+    margin-bottom: 20px;
+    font-size: 30px;
+    color: #385144;
+}
 
-    .privacy-container p {
-        margin-bottom: 14px;
-    }
+.info-page-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 22px 24px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+    margin-bottom: 18px;
+}
 
-    .privacy-container ul {
-        padding-left: 22px;
-        margin-bottom: 18px;
-    }
+.info-page-card h3 {
+    margin-bottom: 10px;
+    color: #385144;
+    font-size: 20px;
+}
 
-    .privacy-container li {
-        margin-bottom: 8px;
-    }
+.info-page-card p {
+    margin-bottom: 0;
+}
 
-.privacy-note {
-    margin-top: 28px;
-    padding: 14px 16px;
-    border-left: 4px solid #385144;
-    background: rgba(56, 81, 68, 0.08);
-    border-radius: 10px;
+.info-page-card a {
+    color: #385144;
+    font-weight: 600;
+}
+
+.info-page-list {
+    padding-left: 22px;
+    margin: 0;
+}
+
+.info-page-list li {
+    margin-bottom: 8px;
 }
 
 .logo-text {
@@ -1137,6 +1101,15 @@ main {
         flex-direction: column;
         align-items: flex-start;
     }
+
+    .checkout-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .checkout-price-box {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 }
 
 
@@ -1146,11 +1119,11 @@ main {
 }
 
 .accommodation-details-container {
-    max-width: 1200px;
+    max-width: 1320px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: 1.1fr 1fr;
-    gap: 35px;
+    grid-template-columns: 1.5fr 0.95fr;
+    gap: 40px;
     align-items: start;
 }
 
@@ -1163,10 +1136,11 @@ main {
 
 .details-main-image {
     width: 100%;
-    height: 100%;
-    min-height: 500px;
-    object-fit: cover;
+    height: auto;
+    min-height: 0;
+    object-fit: contain;
     display: block;
+    background: #f2f0ec;
 }
 
 .details-content {
@@ -1174,6 +1148,7 @@ main {
     border-radius: 20px;
     padding: 28px;
     box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+    max-width: 780px;
 }
 
 .details-top-row {
@@ -1259,6 +1234,98 @@ main {
     font-size: 32px;
     font-weight: 800;
     color: #222;
+}
+
+.details-booking-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.details-booking-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.details-booking-field input {
+    max-width: 120px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+}
+
+.details-book-now-btn {
+    flex: 0 0 auto;
+}
+
+.details-booking-error {
+    flex-basis: 100%;
+    margin-left: 0;
+}
+
+.checkout-section {
+    background: #f8f5f2;
+    padding: 70px 20px;
+}
+
+.checkout-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.checkout-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+}
+
+.checkout-summary {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+.checkout-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 16px;
+}
+
+.checkout-summary-text h2 {
+    margin: 0 0 8px;
+    color: #222;
+}
+
+.checkout-location {
+    color: #385144;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.checkout-price-box {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: center;
+    margin-top: 24px;
+    padding: 20px;
+    border-radius: 16px;
+    background: #f8f5f2;
+}
+
+.checkout-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 24px;
 }
 
 .details-book-btn {
@@ -1396,8 +1463,12 @@ main {
         grid-template-columns: 1fr;
     }
 
+    .details-content {
+        max-width: none;
+    }
+
     .details-main-image {
-        min-height: 350px;
+        height: auto;
     }
 }
 
@@ -1449,7 +1520,8 @@ main {
     display: flex;
     flex-direction: column;
     align-items: center; /* center admin content */
-    gap: 12px;
+    gap: 18px;
+    padding: 0 20px 40px;
 }
 
 .admin-area .filter-btn {
@@ -1461,6 +1533,11 @@ main {
 .admin-table {
     width: 100%;
     max-width: 1100px;
+    border-collapse: collapse;
+    background: #ffffff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.06);
 }
 
 /* Centered quick links on admin index */
@@ -1475,8 +1552,52 @@ main {
 }
 
 .admin-table .clear-btn {
-    padding: 6px 10px; /* smaller admin buttons */
+    padding: 8px 12px;
     font-size: 13px;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 14px 16px;
+    vertical-align: top;
+    text-align: left;
+}
+
+.admin-table th {
+    white-space: nowrap;
+}
+
+.admin-table-header th {
+    background: #f1f1f1;
+    padding: 14px 16px;
+    vertical-align: middle;
+}
+
+.admin-table tbody tr {
+    border-top: 1px solid rgba(0,0,0,0.06);
+}
+
+.admin-table tbody tr:nth-child(even) {
+    background: rgba(56, 81, 68, 0.03);
+}
+
+.admin-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.admin-actions form {
+    margin: 0;
+}
+
+.admin-area .page-hero {
+    margin-bottom: 8px;
+}
+
+.admin-area table + .filter-btn,
+.admin-area .filter-btn + table {
+    margin-top: 8px;
 }
 
 /* ensure spacing between create button and table */

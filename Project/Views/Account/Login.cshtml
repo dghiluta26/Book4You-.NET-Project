@@ -12,6 +12,8 @@
             }
 
             <form asp-action="Login" method="post" class="auth-form">
+                <input asp-for="ReturnUrl" type="hidden" />
+
                 <label>
                     Email
                     <input asp-for="Email" placeholder="Email" />

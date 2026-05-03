@@ -9,17 +9,20 @@ public class AdminService : IAdminService
     private readonly IUserRepository _userRepository;
     private readonly IUnavailablePeriodRepository _unavailablePeriodRepository;
     private readonly IAccommodationRepository _accommodationRepository;
+    private readonly IContactMessageRepository _contactMessageRepository;
 
     public AdminService(
         IBookingRepository bookingRepository,
         IUserRepository userRepository,
         IUnavailablePeriodRepository unavailablePeriodRepository,
-        IAccommodationRepository accommodationRepository)
+        IAccommodationRepository accommodationRepository,
+        IContactMessageRepository contactMessageRepository)
     {
         _bookingRepository = bookingRepository;
         _userRepository = userRepository;
         _unavailablePeriodRepository = unavailablePeriodRepository;
         _accommodationRepository = accommodationRepository;
+        _contactMessageRepository = contactMessageRepository;
     }
 
     public List<Booking> GetBookings() => _bookingRepository.GetAllForAdmin();
@@ -66,5 +69,21 @@ public class AdminService : IAdminService
         var period = _unavailablePeriodRepository.GetById(id) ?? throw new InvalidOperationException("Unavailable period not found.");
         _unavailablePeriodRepository.Remove(period);
         _unavailablePeriodRepository.SaveChanges();
+    }
+
+    public List<ContactMessage> GetContactMessages() => _contactMessageRepository.GetAll();
+
+    public void MarkContactMessageAsRead(int id)
+    {
+        var message = _contactMessageRepository.GetById(id) ?? throw new InvalidOperationException("Contact message not found.");
+        message.IsRead = true;
+        _contactMessageRepository.SaveChanges();
+    }
+
+    public void DeleteContactMessage(int id)
+    {
+        var message = _contactMessageRepository.GetById(id) ?? throw new InvalidOperationException("Contact message not found.");
+        _contactMessageRepository.Remove(message);
+        _contactMessageRepository.SaveChanges();
     }
 }

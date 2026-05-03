@@ -27,7 +27,7 @@ namespace Project.Data
                 context.SaveChanges();
             }
 
-            // ensure at least one admin user exists
+            
             if (!context.Users.Any(u => u.Role == "Admin"))
             {
                 var admin = new User
@@ -44,7 +44,7 @@ namespace Project.Data
                 context.SaveChanges();
             }
 
-            // seed some unavailable periods for demonstration (optional)
+            
             if (!context.Set<Project.Models.UnavailablePeriod>().Any())
             {
                 var firstAccommodation = context.Accommodations.FirstOrDefault();

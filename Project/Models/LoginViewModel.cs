@@ -4,6 +4,8 @@ namespace Project.Models
 {
     public class LoginViewModel
     {
+        public string? ReturnUrl { get; set; }
+
         [Required(ErrorMessage = "Email-ul este obligatoriu.")]
         [EmailAddress(ErrorMessage = "Introdu un email valid.")]
         public string Email { get; set; } = string.Empty;

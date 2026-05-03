@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Project.Models;
 using Project.Services;
 
 namespace Project.Controllers
@@ -29,6 +30,66 @@ namespace Project.Controllers
             }
 
             return View(_bookingService.GetForUser(user.Id));
+        }
+
+        [HttpGet]
+        public IActionResult Checkout(int id, string? checkIn, string? checkOut, int? guests)
+        {
+            var userEmail = HttpContext.Session.GetString("UserEmail");
+            if (string.IsNullOrEmpty(userEmail))
+            {
+                var returnUrl = Url.Action(nameof(Checkout), new { id, checkIn, checkOut, guests });
+                return RedirectToAction("Login", "Account", new { returnUrl });
+            }
+
+            var user = _userService.GetByEmail(userEmail);
+            if (user == null)
+            {
+                HttpContext.Session.Clear();
+                var returnUrl = Url.Action(nameof(Checkout), new { id, checkIn, checkOut, guests });
+                return RedirectToAction("Login", "Account", new { returnUrl });
+            }
+
+            var preview = _bookingService.GetCheckoutPreview(id, checkIn, checkOut, guests);
+            if (preview == null)
+            {
+                return NotFound();
+            }
+
+            preview.ReturnUrl = Url.Action(nameof(ConfirmCheckout), new { id, checkIn, checkOut, guests });
+            return View(preview);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ConfirmCheckout(int id, string? checkIn, string? checkOut, int? guests)
+        {
+            var userEmail = HttpContext.Session.GetString("UserEmail");
+            if (string.IsNullOrEmpty(userEmail))
+                return RedirectToAction("Login", "Account", new { returnUrl = Url.Action(nameof(Checkout), new { id, checkIn, checkOut, guests }) });
+
+            var user = _userService.GetByEmail(userEmail);
+            if (user == null)
+            {
+                HttpContext.Session.Clear();
+                return RedirectToAction("Login", "Account", new { returnUrl = Url.Action(nameof(Checkout), new { id, checkIn, checkOut, guests }) });
+            }
+
+            var result = _bookingService.Book(id, user.Id, checkIn, checkOut, guests);
+            if (!result.Success)
+            {
+                var preview = _bookingService.GetCheckoutPreview(id, checkIn, checkOut, guests);
+                if (preview == null)
+                {
+                    return NotFound();
+                }
+
+                preview.ErrorMessage = result.Message;
+                preview.ReturnUrl = Url.Action(nameof(Checkout), new { id, checkIn, checkOut, guests });
+                return View("Checkout", preview);
+            }
+
+            return RedirectToAction("MyBookings", "Booking");
         }
 
         [HttpPost]

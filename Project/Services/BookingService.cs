@@ -23,6 +23,51 @@ public class BookingService : IBookingService
 
     public List<Booking> GetForAdmin() => _bookingRepository.GetAllForAdmin();
 
+    public BookingCheckoutViewModel? GetCheckoutPreview(int accommodationId, string? checkIn, string? checkOut, int? guests)
+    {
+        var accommodation = _accommodationRepository.GetById(accommodationId);
+        if (accommodation == null)
+        {
+            return null;
+        }
+
+        if (!DateTime.TryParse(checkIn, out var requestedCheckIn) || !DateTime.TryParse(checkOut, out var requestedCheckOut))
+        {
+            return new BookingCheckoutViewModel
+            {
+                AccommodationId = accommodationId,
+                AccommodationTitle = accommodation.Title,
+                AccommodationLocation = accommodation.Location,
+                AccommodationImageUrl = accommodation.ImageUrl,
+                PricePerNight = accommodation.PricePerNight,
+                Guests = guests ?? 1,
+                ErrorMessage = "Please provide valid check-in and check-out dates."
+            };
+        }
+
+        var nights = (requestedCheckOut.Date - requestedCheckIn.Date).Days;
+        if (nights <= 0)
+        {
+            nights = 1;
+        }
+
+        var totalPrice = accommodation.PricePerNight * nights;
+
+        return new BookingCheckoutViewModel
+        {
+            AccommodationId = accommodationId,
+            AccommodationTitle = accommodation.Title,
+            AccommodationLocation = accommodation.Location,
+            AccommodationImageUrl = accommodation.ImageUrl,
+            PricePerNight = accommodation.PricePerNight,
+            Guests = guests ?? 1,
+            CheckInDate = requestedCheckIn.Date,
+            CheckOutDate = requestedCheckOut.Date,
+            Nights = nights,
+            TotalPrice = totalPrice
+        };
+    }
+
     public (bool Success, string Message) Book(int accommodationId, int userId, string? checkIn, string? checkOut, int? guests)
     {
         var accommodation = _accommodationRepository.GetById(accommodationId);
