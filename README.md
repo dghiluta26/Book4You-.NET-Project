@@ -99,8 +99,5 @@ The project uses EF Core migrations and includes seeded data for:
 - Email notifications
 
   
-## **Author**:
-Ghiluta Denis Cristian
-
 ## **License**
 This project is for educational purposes
