@@ -16,11 +16,12 @@ public class AccountService : IAccountService
 
     public User? GetById(int id) => _userRepository.GetById(id);
 
-    public void UpdateProfile(User user, string firstName, string lastName, string? address)
+    public void UpdateProfile(User user, string firstName, string lastName, string? address, string? profilePictureUrl)
     {
         user.FirstName = firstName;
         user.LastName = lastName;
         user.Address = address;
+        user.ProfilePictureUrl = profilePictureUrl;
         _userRepository.SaveChanges();
     }
 }

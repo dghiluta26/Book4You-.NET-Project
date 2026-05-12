@@ -22,6 +22,7 @@ namespace Project.Models
 
         public string? ProfilePictureUrl { get; set; }
 
+        [Display(Name = "Profile picture")]
         public IFormFile? ProfilePictureFile { get; set; }
     }
 }

@@ -17,7 +17,7 @@
     <div class="profile-layout">
         <section class="profile-card profile-card--summary">
             <div class="profile-avatar profile-avatar--large">
-                <img src="@profilePicture" alt="Profile picture preview" onerror="this.onerror=null;this.src='@defaultAvatar';" />
+                <img id="profilePicturePreview" src="@profilePicture" alt="Profile picture preview" onerror="this.onerror=null;this.src='@defaultAvatar';" />
             </div>
 
             <div class="profile-summary-text">
@@ -32,16 +32,61 @@
 
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <label for="FirstName">First Name</label>
-            <input id="FirstName" name="FirstName" value="@Model.FirstName" />
+            <label asp-for="ProfilePictureFile">Profile picture</label>
+            <input asp-for="ProfilePictureFile" type="file" accept="image/jpeg,image/png,image/gif,image/webp" class="profile-file-input" />
+            <span asp-validation-for="ProfilePictureFile" class="text-danger"></span>
+            <p class="profile-form-help">Choose a JPG, PNG, GIF, or WEBP image up to 5 MB.</p>
 
-            <label for="LastName">Last Name</label>
-            <input id="LastName" name="LastName" value="@Model.LastName" />
+            <label asp-for="FirstName">First Name</label>
+            <input asp-for="FirstName" />
+            <span asp-validation-for="FirstName" class="text-danger"></span>
 
-            <label for="Address">Address</label>
-            <input id="Address" name="Address" value="@Model.Address" />
+            <label asp-for="LastName">Last Name</label>
+            <input asp-for="LastName" />
+            <span asp-validation-for="LastName" class="text-danger"></span>
 
-            <button type="submit" class="profile-save-btn">Save changes</button>
+            <label asp-for="Address">Address</label>
+            <input asp-for="Address" />
+            <span asp-validation-for="Address" class="text-danger"></span>
+
+            <button type="submit" class="profile-save-btn" data-loading-text="Saving...">Save changes</button>
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            var input = document.getElementById('ProfilePictureFile');
+            var preview = document.getElementById('profilePicturePreview');
+            var form = document.querySelector('.profile-form');
+            var submitButton = form ? form.querySelector('.profile-save-btn') : null;
+
+            if (input && preview) {
+                input.addEventListener('change', function () {
+                    var file = input.files && input.files[0];
+                    if (!file) return;
+
+                    if (!file.type || !file.type.startsWith('image/')) {
+                        input.value = '';
+                        return;
+                    }
+
+                    preview.src = URL.createObjectURL(file);
+                });
+            }
+
+            if (form && submitButton) {
+                form.addEventListener('submit', function () {
+                    if (window.jQuery && jQuery.fn.validate && !jQuery(form).valid()) {
+                        return;
+                    }
+
+                    submitButton.disabled = true;
+                    submitButton.textContent = submitButton.getAttribute('data-loading-text');
+                });
+            }
+        })();
+    </script>
+}
