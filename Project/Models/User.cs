@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Http;
 
 namespace Project.Models
@@ -28,6 +29,7 @@ namespace Project.Models
         [MaxLength(255)]
         public string? Address { get; set; }
 
+        [MaxLength]
         public string? ProfilePictureUrl { get; set; }
 
         [NotMapped]
