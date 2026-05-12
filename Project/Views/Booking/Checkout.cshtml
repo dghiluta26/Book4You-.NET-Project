@@ -1,0 +1,67 @@
+@model Project.Models.BookingCheckoutViewModel
+
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<main class="page">
+    <section class="page-hero">
+        <h1>Checkout</h1>
+        <p>Review your reservation before confirming it.</p>
+    </section>
+
+    <section class="checkout-section">
+        <div class="checkout-container">
+            <div class="checkout-card">
+                <div class="checkout-summary">
+                    <img src="@Model.AccommodationImageUrl" alt="@Model.AccommodationTitle" class="checkout-image" />
+                    <div class="checkout-summary-text">
+                        <h2>@Model.AccommodationTitle</h2>
+                        <p class="checkout-location">@Model.AccommodationLocation</p>
+                        <p>Guests: <strong>@Model.Guests</strong></p>
+                        <p>Check-in: <strong>@Model.CheckInDate.ToString("dd MMM yyyy")</strong></p>
+                        <p>Check-out: <strong>@Model.CheckOutDate.ToString("dd MMM yyyy")</strong></p>
+                        <p>Nights: <strong>@Model.Nights</strong></p>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+                {
+                    <div class="error-container" style="margin-top:18px;">
+                        @Model.ErrorMessage
+                    </div>
+                }
+
+                <div class="checkout-price-box">
+                    <div>
+                        <span class="details-price-label">Price per night</span>
+                        <div class="details-price">€@Model.PricePerNight</div>
+                    </div>
+                    <div>
+                        <span class="details-price-label">Total price</span>
+                        <div class="details-price">€@Model.TotalPrice</div>
+                    </div>
+                </div>
+
+                @if (string.IsNullOrWhiteSpace(Model.ErrorMessage))
+                {
+                    <form asp-controller="Booking" asp-action="ConfirmCheckout" method="post" class="checkout-actions">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.AccommodationId" />
+                        <input type="hidden" name="checkIn" value="@Model.CheckInDate.ToString("yyyy-MM-dd")" />
+                        <input type="hidden" name="checkOut" value="@Model.CheckOutDate.ToString("yyyy-MM-dd")" />
+                        <input type="hidden" name="guests" value="@Model.Guests" />
+                        <button type="submit" class="details-book-btn">Confirm Reservation</button>
+                        <a asp-controller="Accommodation" asp-action="AccommodationDetails" asp-route-id="@Model.AccommodationId" class="clear-btn">Back to accommodation</a>
+                    </form>
+                }
+                else
+                {
+                    <div class="checkout-actions">
+                        <a asp-controller="Accommodation" asp-action="AccommodationDetails" asp-route-id="@Model.AccommodationId" class="clear-btn">Back to accommodation</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+</main>

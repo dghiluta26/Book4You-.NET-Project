@@ -1,4 +1,4 @@
-@model Project.Models.User
+@model Project.Models.EditProfileViewModel
 
 @{
     ViewData["Title"] = "Edit Profile";
@@ -40,11 +40,6 @@
 
             <label for="Address">Address</label>
             <input id="Address" name="Address" value="@Model.Address" />
-
-            <label for="ProfilePictureFile">Profile picture</label>
-            <input id="ProfilePictureFile" name="ProfilePictureFile" type="file" accept="image/*" />
-            <span asp-validation-for="ProfilePictureFile" class="text-danger"></span>
-            <small class="profile-form-help">Upload a JPG, PNG, GIF, or WEBP file to replace your current avatar.</small>
 
             <button type="submit" class="profile-save-btn">Save changes</button>
         </form>

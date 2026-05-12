@@ -1,0 +1,56 @@
+@model List<Project.Models.ContactMessage>
+
+@{
+    ViewData["Title"] = "Contact Messages";
+}
+
+<div class="page-hero">
+    <h1>Contact Messages</h1>
+</div>
+
+<div class="admin-area">
+    <table class="admin-table">
+        <thead>
+            <tr class="admin-table-header">
+                <th>Status</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Subject</th>
+                <th>Message</th>
+                <th>Created</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var message in Model)
+            {
+                <tr>
+                    <td>@(message.IsRead ? "Read" : "New")</td>
+                    <td>@message.Name</td>
+                    <td>@message.Email</td>
+                    <td>@message.Subject</td>
+                    <td>@message.Message</td>
+                    <td>@message.CreatedAt.ToLocalTime().ToString("g")</td>
+                    <td>
+                        <div class="admin-actions">
+                            @if (!message.IsRead)
+                            {
+                                <form asp-controller="Admin" asp-action="MarkContactMessageAsRead" method="post" style="display:inline;">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@message.Id" />
+                                    <button type="submit" class="clear-btn">Mark as read</button>
+                                </form>
+                            }
+
+                            <form asp-controller="Admin" asp-action="DeleteContactMessage" method="post" style="display:inline;">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@message.Id" />
+                                <button type="submit" class="clear-btn">Delete</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

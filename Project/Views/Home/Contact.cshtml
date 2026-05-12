@@ -1,28 +1,38 @@
-﻿@{
+﻿@model Project.Models.ContactMessage
+
+@{
     ViewData["Title"] = "Contact";
 }
 
 <div class="page">
     <section class="contact-section">
         <div class="contact-container">
-
             <div class="contact-form-wrapper">
                 <h2>Send us a message</h2>
-                <form class="contact-form" method="post">
-                    <label>
-                        Name
-                        <input type="text" required>
-                    </label>
 
-                    <label>
-                        Email
-                        <input type="email" required>
-                    </label>
+                @if (TempData["ContactSuccess"] is string successMessage)
+                {
+                    <div class="text-success">@successMessage</div>
+                }
 
-                    <label>
-                        Message
-                        <textarea rows="5" required></textarea>
-                    </label>
+                <form asp-controller="Home" asp-action="Contact" method="post" class="contact-form">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <label asp-for="Name"></label>
+                    <input asp-for="Name" type="text" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+
+                    <label asp-for="Email"></label>
+                    <input asp-for="Email" type="email" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+
+                    <label asp-for="Subject"></label>
+                    <input asp-for="Subject" type="text" />
+                    <span asp-validation-for="Subject" class="text-danger"></span>
+
+                    <label asp-for="Message"></label>
+                    <textarea asp-for="Message" rows="5"></textarea>
+                    <span asp-validation-for="Message" class="text-danger"></span>
 
                     <button class="contact-btn" type="submit">Send message</button>
                 </form>
@@ -45,7 +55,10 @@
                     </iframe>
                 </div>
             </div>
-
         </div>
     </section>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

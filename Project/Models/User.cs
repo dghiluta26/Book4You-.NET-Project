@@ -32,9 +32,6 @@ namespace Project.Models
         [MaxLength]
         public string? ProfilePictureUrl { get; set; }
 
-        [NotMapped]
-        public IFormFile? ProfilePictureFile { get; set; }
-
         [MaxLength(50)]
         public string Role { get; set; } = "User"; // User or Admin
 

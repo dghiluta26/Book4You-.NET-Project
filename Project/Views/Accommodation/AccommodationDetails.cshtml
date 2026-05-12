@@ -44,7 +44,7 @@
                     </div>
 
                     <div class="details-rating">
-                        ★ @Model.Accommodation.Rating
+                        ★ @(Model.Reviews.Count > 0 ? Model.Accommodation.Rating.ToString("0.00") : "No reviews")
                     </div>
                 </div>
 
@@ -80,24 +80,24 @@
                         <div class="details-price">€@Model.Accommodation.PricePerNight</div>
                     </div>
 
-                    <div style="display:flex; gap:8px; align-items:center;">
-                        <div style="display:flex; gap:8px; align-items:center;">
-                            <label style="color:#666;">Guests</label>
-                            <input type="number" id="bookGuests" min="1" max="@Model.Accommodation.Capacity" value="1" style="width:70px; padding:6px; border-radius:6px; border:1px solid #ddd;" />
+                    <div class="details-booking-row">
+                        <div class="details-booking-field">
+                            <label for="bookGuests" style="color:#666;">Guests</label>
+                            <input type="number" id="bookGuests" min="1" max="@Model.Accommodation.Capacity" value="1" />
                         </div>
 
-                        <div style="display:flex; gap:8px; align-items:center;">
-                            <label style="color:#666;">Check-in</label>
+                        <div class="details-booking-field">
+                            <label for="bookCheckIn" style="color:#666;">Check-in</label>
                             <input type="date" id="bookCheckIn" value="@ViewBag.CheckIn" />
                         </div>
 
-                        <div style="display:flex; gap:8px; align-items:center;">
-                            <label style="color:#666;">Check-out</label>
+                        <div class="details-booking-field">
+                            <label for="bookCheckOut" style="color:#666;">Check-out</label>
                             <input type="date" id="bookCheckOut" value="@ViewBag.CheckOut" />
                         </div>
 
-                        <a href="#" class="details-book-btn" id="bookNowBtn" data-accommodation-id="@Model.Accommodation.Id">Book Now</a>
-                        <div id="bookingError" class="error-container" style="color:red; display:none; margin-left:8px;"></div>
+                        <a href="#" class="details-book-btn details-book-now-btn" id="bookNowBtn" data-accommodation-id="@Model.Accommodation.Id">Book Now</a>
+                        <div id="bookingError" class="error-container details-booking-error" style="color:red; display:none;"></div>
                     </div>
                 </div>
 
@@ -182,9 +182,13 @@
                             <button type="submit" class="details-book-btn review-submit-btn">Submit Review</button>
                         </form>
                     }
+                    else if (Model.HasReviewed)
+                    {
+                        <p class="muted review-info-note">You already reviewed this accommodation. Thanks for your feedback.</p>
+                    }
                     else if (User.Identity?.IsAuthenticated == true)
                     {
-                        <p class="muted review-info-note">You can leave a review after your stay, or if you have already reviewed this accommodation, thank you for the feedback.</p>
+                        <p class="muted review-info-note">You can leave a review after your stay. In development, one completed booking is enough to test the review form.</p>
                     }
                     else
                     {
@@ -220,43 +224,8 @@
                 var checkIn = document.getElementById('bookCheckIn')?.value || '';
                 var checkOut = document.getElementById('bookCheckOut')?.value || '';
 
-                fetch('@Url.Action("Book", "Booking")', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
-                    },
-                    body: 'id=' + encodeURIComponent(id) + '&guests=' + encodeURIComponent(guests) + '&checkIn=' + encodeURIComponent(checkIn) + '&checkOut=' + encodeURIComponent(checkOut)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    var errEl = document.getElementById('bookingError');
-                    if (!errEl) errEl = document.createElement('div');
-
-                    if(data.success){
-                        errEl.style.color = '#1b5e20';
-                        errEl.style.display = 'block';
-                        errEl.innerText = "You've successfully booked this accommodation!";
-                        if(data.redirect) setTimeout(function(){ window.location = data.redirect; }, 900);
-                    } else if (data.loginRedirect) {
-                        window.location = data.loginRedirect;
-                    } else {
-                        errEl.style.color = '#b00020';
-                        errEl.style.display = 'block';
-                        errEl.innerText = data.message || 'Booking failed';
-                    }
-                })
-                .catch(err => {
-                    console.error(err);
-                    var errEl = document.getElementById('bookingError');
-                    if (errEl) {
-                        errEl.style.color = '#b00020';
-                        errEl.style.display = 'block';
-                        errEl.innerText = 'An error occurred while booking.';
-                    } else {
-                        alert('An error occurred while booking.');
-                    }
-                });
+                var checkoutUrl = '@Url.Action("Checkout", "Booking")' + '?id=' + encodeURIComponent(id) + '&checkIn=' + encodeURIComponent(checkIn) + '&checkOut=' + encodeURIComponent(checkOut) + '&guests=' + encodeURIComponent(guests);
+                window.location = checkoutUrl;
             });
         });
     </script>
