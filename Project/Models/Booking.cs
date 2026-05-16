@@ -23,5 +23,8 @@ namespace Project.Models
         public string Status { get; set; } = "Pending";
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        // Relative URL to the generated confirmation PDF, e.g. /pdfs/bookings/booking_1.pdf
+        public string? PdfPath { get; set; }
     }
 }

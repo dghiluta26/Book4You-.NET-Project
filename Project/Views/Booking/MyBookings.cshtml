@@ -32,8 +32,13 @@
                         <p style="margin:0 0 6px 0;">Check in: @booking.CheckInDate.ToShortDateString() &nbsp; • &nbsp; Check out: @booking.CheckOutDate.ToShortDateString()</p>
                         <p style="margin:0 0 6px 0; font-weight:700;">Total: @booking.TotalPrice.ToString("C")</p>
                     </div>
-                    <div>
+                    <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-end;">
                         <a asp-controller="Accommodation" asp-action="AccommodationDetails" asp-route-id="@booking.AccommodationId" class="clear-btn">View</a>
+                        <a asp-controller="Booking" asp-action="DownloadPdf" asp-route-id="@booking.Id"
+                           class="filter-btn" style="font-size:13px; padding:6px 14px; white-space:nowrap;"
+                           title="Download booking confirmation PDF">
+                            &#8681; Confirmation PDF
+                        </a>
                     </div>
                 </div>
             }

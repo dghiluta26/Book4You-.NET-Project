@@ -33,6 +33,8 @@
                                 <button type="submit" class="clear-btn">Cancel</button>
                             </form>
                         }
+                        <a asp-controller="Admin" asp-action="DownloadBookingPdf" asp-route-id="@b.Id"
+                           class="filter-btn" style="font-size:12px; padding:5px 10px;" title="Download confirmation PDF">PDF</a>
                         </div>
                     </td>
                 </tr>
