@@ -10,6 +10,20 @@
 </div>
 
 <div class="accommodations-container page" style="max-width:900px; margin: 30px auto;">
+    @if (TempData["BookingSuccess"] is string successMessage)
+    {
+        <div class="success-container" style="margin-bottom:16px;">
+            @successMessage
+        </div>
+    }
+
+    @if (TempData["BookingError"] is string errorMessage)
+    {
+        <div class="error-container" style="margin-bottom:16px;">
+            @errorMessage
+        </div>
+    }
+
     @if (!Model.Any())
     {
         <div style="display:flex; justify-content:center; align-items:center; padding:20px;">
@@ -25,15 +39,24 @@
             @foreach (var booking in Model)
             {
                 <div class="accommodation-card" style="display:flex; gap:16px; padding:16px; align-items:center;">
-                    <img src="@booking.Accommodation.ImageUrl" alt="img" style="width:160px; height:110px; object-fit:cover; border-radius:8px;" />
+                    <img src="@booking.Accommodation.ImageUrl" alt="@booking.Accommodation.Title" style="width:160px; height:110px; object-fit:cover; border-radius:8px;" />
                     <div style="flex:1;">
                         <h3 style="margin:0 0 8px 0;">@booking.Accommodation.Title</h3>
                         <p style="margin:0 0 6px 0; color:#666;">@booking.Accommodation.Location</p>
-                        <p style="margin:0 0 6px 0;">Check in: @booking.CheckInDate.ToShortDateString() &nbsp; • &nbsp; Check out: @booking.CheckOutDate.ToShortDateString()</p>
+                        <p style="margin:0 0 6px 0;">Check in: @booking.CheckInDate.ToShortDateString() &nbsp; - &nbsp; Check out: @booking.CheckOutDate.ToShortDateString()</p>
                         <p style="margin:0 0 6px 0; font-weight:700;">Total: @booking.TotalPrice.ToString("C")</p>
+                        <p style="margin:0; color:#385144; font-weight:700;">Status: @booking.Status</p>
                     </div>
-                    <div>
+                    <div style="display:flex; flex-direction:column; gap:10px; align-items:stretch;">
                         <a asp-controller="Accommodation" asp-action="AccommodationDetails" asp-route-id="@booking.AccommodationId" class="clear-btn">View</a>
+                        @if (booking.Status != "Cancelled")
+                        {
+                            <form asp-controller="Booking" asp-action="CancelBooking" method="post" style="margin:0;">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@booking.Id" />
+                                <button type="submit" class="clear-btn" onclick="return confirm('Cancel this booking?');">Cancel</button>
+                            </form>
+                        }
                     </div>
                 </div>
             }

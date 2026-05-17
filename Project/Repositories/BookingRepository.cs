@@ -39,7 +39,11 @@ public class BookingRepository : IBookingRepository
 
     public bool HasOverlappingBooking(int accommodationId, DateTime checkIn, DateTime checkOut)
     {
-        return _context.Bookings.Any(b => b.AccommodationId == accommodationId && b.CheckInDate < checkOut && b.CheckOutDate > checkIn);
+        return _context.Bookings.Any(b =>
+            b.AccommodationId == accommodationId &&
+            b.Status != "Cancelled" &&
+            b.CheckInDate < checkOut &&
+            b.CheckOutDate > checkIn);
     }
 
     public bool HasUserStayed(int userId, int accommodationId)

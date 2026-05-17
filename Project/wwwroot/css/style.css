@@ -1100,6 +1100,26 @@ main {
         color: #555;
     }
 
+.success-container,
+.error-container {
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.success-container {
+    background: rgba(56, 81, 68, 0.1);
+    border: 1px solid rgba(56, 81, 68, 0.22);
+    color: #385144;
+}
+
+.error-container {
+    background: rgba(166, 51, 51, 0.1);
+    border: 1px solid rgba(166, 51, 51, 0.22);
+    color: #8f2424;
+}
+
 @media (max-width: 1100px) {
     .filter-grid {
         grid-template-columns: repeat(2, 1fr);

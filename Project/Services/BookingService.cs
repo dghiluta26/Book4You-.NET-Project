@@ -140,4 +140,23 @@ public class BookingService : IBookingService
         booking.Status = "Cancelled";
         _bookingRepository.SaveChanges();
     }
+
+    public (bool Success, string Message) CancelForUser(int id, int userId)
+    {
+        var booking = _bookingRepository.GetById(id);
+        if (booking == null || booking.UserId != userId)
+        {
+            return (false, "Booking not found.");
+        }
+
+        if (booking.Status == "Cancelled")
+        {
+            return (false, "This booking is already cancelled.");
+        }
+
+        booking.Status = "Cancelled";
+        _bookingRepository.SaveChanges();
+
+        return (true, "Your booking was cancelled successfully.");
+    }
 }
