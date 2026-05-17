@@ -47,8 +47,13 @@
                         <p style="margin:0 0 6px 0; font-weight:700;">Total: @booking.TotalPrice.ToString("C")</p>
                         <p style="margin:0; color:#385144; font-weight:700;">Status: @booking.Status</p>
                     </div>
-                    <div style="display:flex; flex-direction:column; gap:10px; align-items:stretch;">
+                    <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-end;">
                         <a asp-controller="Accommodation" asp-action="AccommodationDetails" asp-route-id="@booking.AccommodationId" class="clear-btn">View</a>
+                        <a asp-controller="Booking" asp-action="DownloadPdf" asp-route-id="@booking.Id"
+                           class="filter-btn" style="font-size:13px; padding:6px 14px; white-space:nowrap;"
+                           title="Download booking confirmation PDF">
+                            &#8681; Confirmation PDF
+                        </a>
                         @if (booking.Status != "Cancelled")
                         {
                             <form asp-controller="Booking" asp-action="CancelBooking" method="post" style="margin:0;">

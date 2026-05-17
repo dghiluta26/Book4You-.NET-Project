@@ -15,6 +15,12 @@ public class BookingRepository : IBookingRepository
 
     public Booking? GetById(int id) => _context.Bookings.FirstOrDefault(b => b.Id == id);
 
+    public Booking? GetByIdWithDetails(int id) =>
+        _context.Bookings
+            .Include(b => b.User)
+            .Include(b => b.Accommodation)
+            .FirstOrDefault(b => b.Id == id);
+
     public List<Booking> GetByUserId(int userId)
     {
         return _context.Bookings

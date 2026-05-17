@@ -5,6 +5,7 @@ namespace Project.Repositories;
 public interface IBookingRepository
 {
     Booking? GetById(int id);
+    Booking? GetByIdWithDetails(int id);
     List<Booking> GetByUserId(int userId);
     List<Booking> GetAllForAdmin();
     void Add(Booking booking);

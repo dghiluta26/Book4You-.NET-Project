@@ -5,7 +5,9 @@ using Project.Data;
 using Project.Repositories;
 using Project.Services;
 using System.IO;
+using QuestPDF.Infrastructure;
 
+QuestPDF.Settings.License = LicenseType.Community;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +29,7 @@ builder.Services.AddScoped<IAccommodationService, AccommodationService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IContactService, ContactService>();
+builder.Services.AddScoped<IPdfService, PdfService>();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddSession();

@@ -8,15 +8,18 @@ public class BookingService : IBookingService
     private readonly IBookingRepository _bookingRepository;
     private readonly IAccommodationRepository _accommodationRepository;
     private readonly IUnavailablePeriodRepository _unavailablePeriodRepository;
+    private readonly IPdfService _pdfService;
 
     public BookingService(
         IBookingRepository bookingRepository,
         IAccommodationRepository accommodationRepository,
-        IUnavailablePeriodRepository unavailablePeriodRepository)
+        IUnavailablePeriodRepository unavailablePeriodRepository,
+        IPdfService pdfService)
     {
         _bookingRepository = bookingRepository;
         _accommodationRepository = accommodationRepository;
         _unavailablePeriodRepository = unavailablePeriodRepository;
+        _pdfService = pdfService;
     }
 
     public List<Booking> GetForUser(int userId) => _bookingRepository.GetByUserId(userId);
@@ -124,7 +127,27 @@ public class BookingService : IBookingService
         };
 
         _bookingRepository.Add(booking);
-        _bookingRepository.SaveChanges();
+        _bookingRepository.SaveChanges(); // booking.Id is populated after this point
+
+        // Generate the confirmation PDF. Load the full entity so navigation properties
+        // (User, Accommodation) are available for the PDF layout.
+        try
+        {
+            var fullBooking = _bookingRepository.GetByIdWithDetails(booking.Id);
+            if (fullBooking != null)
+            {
+                var pdfPath = _pdfService.GenerateBookingPdf(fullBooking);
+                if (pdfPath != null)
+                {
+                    fullBooking.PdfPath = pdfPath;
+                    _bookingRepository.SaveChanges();
+                }
+            }
+        }
+        catch
+        {
+            // PDF generation is non-critical. The booking is already persisted.
+        }
 
         return (true, "Booking created.");
     }
