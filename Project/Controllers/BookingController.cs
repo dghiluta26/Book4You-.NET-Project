@@ -44,6 +44,34 @@ namespace Project.Controllers
             return View(_bookingService.GetForUser(user.Id));
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CancelBooking(int id)
+        {
+            var userEmail = HttpContext.Session.GetString("UserEmail");
+            if (string.IsNullOrEmpty(userEmail))
+                return RedirectToAction("Login", "Account");
+
+            var user = _userService.GetByEmail(userEmail);
+            if (user == null)
+            {
+                HttpContext.Session.Clear();
+                return RedirectToAction("Login", "Account");
+            }
+
+            var result = _bookingService.CancelForUser(id, user.Id);
+            if (result.Success)
+            {
+                TempData["BookingSuccess"] = result.Message;
+            }
+            else
+            {
+                TempData["BookingError"] = result.Message;
+            }
+
+            return RedirectToAction(nameof(MyBookings));
+        }
+
         [HttpGet]
         public IActionResult Checkout(int id, string? checkIn, string? checkOut, int? guests)
         {

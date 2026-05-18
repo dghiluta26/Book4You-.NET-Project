@@ -9,4 +9,5 @@ public interface IBookingService
     BookingCheckoutViewModel? GetCheckoutPreview(int accommodationId, string? checkIn, string? checkOut, int? guests);
     (bool Success, string Message) Book(int accommodationId, int userId, string? checkIn, string? checkOut, int? guests);
     void Cancel(int id);
+    (bool Success, string Message) CancelForUser(int id, int userId);
 }
