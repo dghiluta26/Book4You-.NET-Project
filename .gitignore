@@ -6,6 +6,25 @@
 # dotenv files
 .env
 
+# Local AI agent and assistant files
+.agents/
+.claude/
+.codex/
+.cursor/
+.windsurf/
+.continue/
+.aider*/
+.copilot/
+copilot-chat/
+CopilotSnapshots/
+CopilotIndices/
+CLAUDE.md
+AGENTS.md
+agents.md
+claude.md
+chatgpt.md
+copilot.md
+
 # User-specific files
 *.rsuser
 *.suo
