@@ -82,7 +82,10 @@ namespace Project.Controllers
             }
         }
 
+
+        [HttpPost]
         [RequireAdmin]
+        [ValidateAntiForgeryToken]
         public IActionResult DeleteAccommodation(int id)
         {
             try
