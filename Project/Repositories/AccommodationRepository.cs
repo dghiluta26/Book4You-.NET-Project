@@ -49,4 +49,48 @@ public class AccommodationRepository : IAccommodationRepository
             .OrderByDescending(r => r.CreatedAt)
             .ToList();
     }
+
+    
+    public List<Accommodation> SearchAvailable(string? location, string? type, decimal? maxPrice, int? guests, bool hasDates, DateTime checkIn, DateTime checkOut)
+    {
+    var query = _context.Accommodations.AsQueryable();
+
+    if (!string.IsNullOrWhiteSpace(location))
+    {
+        var loc = location.Trim().ToLower();
+        query = query.Where(a => a.Location.ToLower().Contains(loc));
+    }
+
+    if (!string.IsNullOrWhiteSpace(type))
+    {
+        query = query.Where(a => a.Type.ToLower() == type.ToLower());
+    }
+
+    if (maxPrice.HasValue)
+    {
+        query = query.Where(a => a.PricePerNight <= maxPrice.Value);
+    }
+
+    if (guests.HasValue)
+    {
+        query = query.Where(a => a.Capacity >= guests.Value);
+    }
+
+    if (hasDates)
+    {
+        query = query.Where(a =>
+            !_context.Bookings.Any(b =>
+                b.AccommodationId == a.Id &&
+                b.Status != "Cancelled" &&
+                b.CheckInDate < checkOut &&
+                b.CheckOutDate > checkIn)
+            && !_context.UnavailablePeriods.Any(up =>
+                up.AccommodationId == a.Id &&
+                up.StartDate < checkOut &&
+                up.EndDate > checkIn));
+    }
+
+    return query.ToList();
+    }
+
 }

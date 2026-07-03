@@ -1,3 +1,4 @@
+using System.Data;
 using Project.Models;
 
 namespace Project.Repositories;
@@ -13,4 +14,5 @@ public interface IAccommodationRepository
     List<Amenity> GetAmenities(int accommodationId);
     List<AccommodationImage> GetImages(int accommodationId);
     List<Review> GetReviews(int accommodationId);
+    List<Accommodation> SearchAvailable(string? location, string? type, decimal? maxPrice, int? guests, bool hasDates, DateTime checkIn, DateTime checkOut);
 }

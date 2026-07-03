@@ -31,55 +31,23 @@ public class AccommodationService : IAccommodationService
 
     public List<Accommodation> Search(string? location, string? type, decimal? maxPrice, int? guests, string? checkIn, string? checkOut)
     {
-        var query = _accommodationRepository.GetAll().AsQueryable();
-        var requestedCheckIn = DateTime.MinValue;
-        var requestedCheckOut = DateTime.MinValue;
-        var hasDates = DateTime.TryParse(checkIn, out requestedCheckIn) && DateTime.TryParse(checkOut, out requestedCheckOut) && requestedCheckIn < requestedCheckOut;
+    var requestedCheckIn = DateTime.MinValue;
+    var requestedCheckOut = DateTime.MinValue; 
+    var hasDates = DateTime.TryParse(checkIn, out requestedCheckIn) && DateTime.TryParse(checkOut, out requestedCheckOut) && requestedCheckIn < requestedCheckOut;
 
-        if (!string.IsNullOrWhiteSpace(location))
-        {
-            location = location.Trim().ToLower();
-            query = query.Where(a => a.Location.ToLower().Contains(location));
-        }
 
-        if (!string.IsNullOrWhiteSpace(type))
-        {
-            query = query.Where(a => a.Type.ToLower() == type.ToLower());
-        }
+    var stays = _accommodationRepository.SearchAvailable(location, type, maxPrice, guests, hasDates, requestedCheckIn, requestedCheckOut);
 
-        if (maxPrice.HasValue)
-        {
-            query = query.Where(a => a.PricePerNight <= maxPrice.Value);
-        }
+    var ratingsByAccommodationId = _reviewRepository.GetAverageRatings(stays.Select(a => a.Id));
 
-        if (guests.HasValue)
-        {
-            query = query.Where(a => a.Capacity >= guests.Value);
-        }
-
-        if (hasDates)
-        {
-            query = query.Where(a => !_bookingRepository.HasOverlappingBooking(a.Id, requestedCheckIn, requestedCheckOut)
-                && !_unavailablePeriodRepository.HasOverlap(a.Id, requestedCheckIn, requestedCheckOut));
-        }
-
-        var stays = query.ToList();
-        var ratingsByAccommodationId = _reviewRepository.GetAverageRatings(stays.Select(a => a.Id));
-
-        foreach (var stay in stays)
-        {
-            if (ratingsByAccommodationId.TryGetValue(stay.Id, out var averageRating))
-            {
-                stay.Rating = averageRating;
-            }
-            else
-            {
-                stay.Rating = 0m;
-            }
-        }
-
-        return stays.OrderByDescending(a => a.Rating).ThenByDescending(a => a.CreatedAt).ToList();
+    foreach (var stay in stays)
+    {
+        stay.Rating = ratingsByAccommodationId.TryGetValue(stay.Id, out var averageRating) ? averageRating : 0m;
     }
+
+    return stays.OrderByDescending(a => a.Rating).ThenByDescending(a => a.CreatedAt).ToList();
+    }
+ 
 
     public AccommodationDetailsViewModel? GetDetails(int id, int? currentUserId)
     {
