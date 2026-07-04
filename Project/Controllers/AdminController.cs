@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Project.Filters;
 using Project.Models;
-using Project.Repositories;
 using Project.Services;
 
 namespace Project.Controllers
@@ -10,19 +9,16 @@ namespace Project.Controllers
     public class AdminController : Controller
     {
         private readonly IAdminService _adminService;
-        private readonly IBookingRepository _bookingRepository;
-        private readonly IPdfService _pdfService;
+        private readonly IBookingService _bookingService;
         private readonly IWebHostEnvironment _env;
 
         public AdminController(
             IAdminService adminService,
-            IBookingRepository bookingRepository,
-            IPdfService pdfService,
+            IBookingService bookingService,
             IWebHostEnvironment env)
         {
             _adminService = adminService;
-            _bookingRepository = bookingRepository;
-            _pdfService = pdfService;
+            _bookingService = bookingService;
             _env = env;
         }
 
@@ -163,28 +159,20 @@ namespace Project.Controllers
         // Serves the confirmation PDF for any booking (admin access only).
         public IActionResult DownloadBookingPdf(int id)
         {
-            var booking = _bookingRepository.GetByIdWithDetails(id);
-            if (booking == null)
-                return NotFound();
+    var booking = _bookingService.GetBookingForDownload(id);
+    if (booking == null || string.IsNullOrEmpty(booking.PdfPath))
+        return NotFound();
 
-            // Regenerate if missing (e.g. bookings created before this feature was deployed)
-            if (string.IsNullOrEmpty(booking.PdfPath))
-            {
-                var path = _pdfService.GenerateBookingPdf(booking);
-                if (path == null)
-                    return NotFound();
-                booking.PdfPath = path;
-                _bookingRepository.SaveChanges();
-            }
+    var physicalPath = Path.Combine(
+        _env.WebRootPath,
+        booking.PdfPath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
 
-            var physicalPath = Path.Combine(
-                _env.WebRootPath,
-                booking.PdfPath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+    if (!System.IO.File.Exists(physicalPath))
+        return NotFound();
 
-            if (!System.IO.File.Exists(physicalPath))
-                return NotFound();
+    return PhysicalFile(physicalPath, "application/pdf", $"booking-{booking.Id:D6}.pdf");
+}
 
-            return PhysicalFile(physicalPath, "application/pdf", $"booking-{booking.Id:D6}.pdf");
-        }
+
     }
 }

@@ -182,4 +182,24 @@ public class BookingService : IBookingService
 
         return (true, "Your booking was cancelled successfully.");
     }
+
+    public Booking? GetBookingForDownload(int id)
+    {
+        var booking = _bookingRepository.GetByIdWithDetails(id);
+        if (booking == null)
+        {
+            return null;
+        }
+
+        if (string.IsNullOrEmpty(booking.PdfPath))
+        {
+            var path = _pdfService.GenerateBookingPdf(booking);
+            if (path != null)
+            {
+                booking.PdfPath = path;
+                _bookingRepository.SaveChanges();
+            }
+        }
+        return booking;
+    }
 }

@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Project.Models;
-using Project.Repositories;
 using Project.Services;
 
 namespace Project.Controllers
@@ -10,21 +9,17 @@ namespace Project.Controllers
     {
         private readonly IBookingService _bookingService;
         private readonly IUserService _userService;
-        private readonly IBookingRepository _bookingRepository;
-        private readonly IPdfService _pdfService;
+        
+        
         private readonly IWebHostEnvironment _env;
 
         public BookingController(
             IBookingService bookingService,
-            IUserService userService,
-            IBookingRepository bookingRepository,
-            IPdfService pdfService,
+            IUserService userService,  
             IWebHostEnvironment env)
         {
             _bookingService = bookingService;
             _userService = userService;
-            _bookingRepository = bookingRepository;
-            _pdfService = pdfService;
             _env = env;
         }
 
@@ -168,19 +163,9 @@ namespace Project.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var booking = _bookingRepository.GetByIdWithDetails(id);
-            if (booking == null || booking.UserId != user.Id)
-                return NotFound();
-
-            // Regenerate if missing (e.g. first run after feature deployment)
-            if (string.IsNullOrEmpty(booking.PdfPath))
-            {
-                var path = _pdfService.GenerateBookingPdf(booking);
-                if (path == null)
-                    return NotFound();
-                booking.PdfPath = path;
-                _bookingRepository.SaveChanges();
-            }
+            var booking = _bookingService.GetBookingForDownload(id);
+            if (booking == null || booking.UserId != user.Id || string.IsNullOrEmpty(booking.PdfPath))
+            return NotFound();
 
             var physicalPath = Path.Combine(
                 _env.WebRootPath,

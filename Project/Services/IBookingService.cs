@@ -10,4 +10,6 @@ public interface IBookingService
     (bool Success, string Message) Book(int accommodationId, int userId, string? checkIn, string? checkOut, int? guests);
     void Cancel(int id);
     (bool Success, string Message) CancelForUser(int id, int userId);
+
+    Booking? GetBookingForDownload(int id);
 }
