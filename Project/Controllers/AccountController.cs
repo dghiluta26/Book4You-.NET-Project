@@ -257,17 +257,8 @@ namespace Project.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            var user = _userService.GetByEmail(model.Email);
+            var user = _accountService.Authenticate(model.Email, model.Password);
             if (user == null)
-            {
-                ModelState.AddModelError(string.Empty, "Email sau parola incorecta.");
-                return View(model);
-            }
-
-            var hasher = new PasswordHasher<User>();
-            var result = hasher.VerifyHashedPassword(user, user.Password, model.Password);
-
-            if (result == PasswordVerificationResult.Failed)
             {
                 ViewBag.Error = "Email sau parola incorecta";
                 return View(model);

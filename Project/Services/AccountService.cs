@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Project.Models;
 using Project.Repositories;
 
@@ -23,5 +25,40 @@ public class AccountService : IAccountService
         user.Address = address;
         user.ProfilePictureUrl = profilePictureUrl;
         _userRepository.SaveChanges();
+    }
+    
+    public User? Authenticate(string email, string password)
+    {
+        var user = _userRepository.GetByEmail(email);
+        if(user == null)
+        {
+            return null;
+        }
+
+        var hasher = new PasswordHasher<User>();
+        var result = hasher.VerifyHashedPassword(user, user.Password, password);
+
+        return result == PasswordVerificationResult.Failed? null : user;
+    }
+
+    public User? Register(string email, string firstName, string lastName, string? address, string password)
+    {
+        var user = new User
+        {
+            Email = email,
+            FirstName = firstName,
+            LastName = lastName,
+            Address = address,
+
+        };
+
+        var hasher = new PasswordHasher<User>();
+        user.Password = hasher.HashPassword(user, password);
+
+        _userRepository.Add(user);
+        _userRepository.SaveChanges();
+
+
+        return user;
     }
 }
