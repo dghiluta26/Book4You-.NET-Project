@@ -11,7 +11,7 @@ namespace Project.Filters
             var role = http.Session.GetString("UserRole");
             if (string.IsNullOrEmpty(role) || role != "Admin")
             {
-                context.Result = new RedirectToActionResult("Login", "Home", null);
+                context.Result = new RedirectToActionResult("Login", "Account", null);
                 return;
             }
 
