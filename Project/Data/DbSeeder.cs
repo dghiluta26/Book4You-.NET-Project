@@ -77,7 +77,6 @@ namespace Project.Data
                         Bathrooms = 2,
                         Type = "Villa",
                         ImageUrl = "/images/stays/villa1.jpg",
-                        Rating = 4.9m,
                         IsAvailable = true,
                         CreatedAt = DateTime.Now
                     },
@@ -93,7 +92,6 @@ namespace Project.Data
                         Bathrooms = 2,
                         Type = "Villa",
                         ImageUrl = "/images/stays/villa2.jpg",
-                        Rating = 4.9m,
                         IsAvailable = true,
                         CreatedAt = DateTime.Now
                     },
@@ -109,7 +107,6 @@ namespace Project.Data
                         Bathrooms = 1,
                         Type = "Apartment",
                         ImageUrl = "/images/stays/apartment2.jpg",
-                        Rating = 4.8m,
                         IsAvailable = true,
                         CreatedAt = DateTime.Now
                     },
@@ -125,7 +122,6 @@ namespace Project.Data
                         Bathrooms = 1,
                         Type = "Studio",
                         ImageUrl = "/images/stays/studio2.jpg",
-                        Rating = 4.6m,
                         IsAvailable = true,
                         CreatedAt = DateTime.Now
                     },
@@ -141,7 +137,6 @@ namespace Project.Data
                         Bathrooms = 1,
                         Type = "Cabin",
                         ImageUrl = "/images/stays/cabin2.jpg",
-                        Rating = 4.9m,
                         IsAvailable = true,
                         CreatedAt = DateTime.Now
                     },
@@ -157,7 +152,6 @@ namespace Project.Data
                         Bathrooms = 1,
                         Type = "Apartment",
                         ImageUrl = "/images/stays/apartment3.jpg",
-                        Rating = 4.5m,
                         IsAvailable = true,
                         CreatedAt = DateTime.Now
                     },
@@ -173,7 +167,6 @@ namespace Project.Data
                         Bathrooms = 1,
                         Type = "Apartment",
                         ImageUrl = "/images/stays/apartment4.jpg",
-                        Rating = 4.4m,
                         IsAvailable = true,
                         CreatedAt = DateTime.Now
                     },
@@ -189,7 +182,6 @@ namespace Project.Data
                         Bathrooms = 1,
                         Type = "Cabin",
                         ImageUrl = "/images/stays/cabin3.jpg",
-                        Rating = 4.7m,
                         IsAvailable = true,
                         CreatedAt = DateTime.Now
                     },
@@ -205,7 +197,6 @@ namespace Project.Data
                         Bathrooms = 1,
                         Type = "Apartment",
                         ImageUrl = "/images/stays/apartment5.jpg",
-                        Rating = 4.6m,
                         IsAvailable = true,
                         CreatedAt = DateTime.Now
                     },
@@ -221,7 +212,6 @@ namespace Project.Data
                         Bathrooms = 1,
                         Type = "Studio",
                         ImageUrl = "/images/stays/studio3.jpg",
-                        Rating = 4.9m,
                         IsAvailable = true,
                         CreatedAt = DateTime.Now
                     },
@@ -237,7 +227,6 @@ namespace Project.Data
                         Bathrooms = 2,
                         Type = "Villa",
                         ImageUrl = "/images/stays/villa3.jpg",
-                        Rating = 4.8m,
                         IsAvailable = true,
                         CreatedAt = DateTime.Now
                     },
@@ -253,7 +242,6 @@ namespace Project.Data
                         Bathrooms = 1,
                         Type = "Apartment",
                         ImageUrl = "/images/stays/apartment6.jpg",
-                        Rating = 4.5m,
                         IsAvailable = true,
                         CreatedAt = DateTime.Now
                     },
@@ -269,7 +257,6 @@ namespace Project.Data
                         Bathrooms = 1,
                         Type = "Studio",
                         ImageUrl = "/images/stays/studio4.jpg",
-                        Rating = 4.7m,
                         IsAvailable = true,
                         CreatedAt = DateTime.Now
                     },
@@ -285,7 +272,6 @@ namespace Project.Data
                         Bathrooms = 1,
                         Type = "Apartment",
                         ImageUrl = "/images/stays/apartment7.jpg",
-                        Rating = 4.6m,
                         IsAvailable = true,
                         CreatedAt = DateTime.Now
                     },
@@ -301,7 +287,6 @@ namespace Project.Data
                         Bathrooms = 1,
                         Type = "Cabin",
                         ImageUrl = "/images/stays/cabin4.jpg",
-                        Rating = 4.9m,
                         IsAvailable = true,
                         CreatedAt = DateTime.Now
                     }

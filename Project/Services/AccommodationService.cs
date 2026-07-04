@@ -183,6 +183,11 @@ public class AccommodationService : IAccommodationService
 
         _reviewRepository.Add(review);
         _reviewRepository.SaveChanges();
+
+        var updatedRatings = _reviewRepository.GetAverageRatings(new[] { accommodationId });
+        accommodation.Rating = updatedRatings.TryGetValue(accommodationId, out var newAverage) ? newAverage : 0m;
+        _accommodationRepository.SaveChanges();
+
     }
 
     private bool CanLeaveReview(int userId, int accommodationId)
