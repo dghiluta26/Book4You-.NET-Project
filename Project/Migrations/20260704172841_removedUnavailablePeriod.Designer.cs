@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Project.Data;
 
@@ -11,9 +12,11 @@ using Project.Data;
 namespace Project.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260704172841_removedUnavailablePeriod")]
+    partial class removedUnavailablePeriod
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -82,7 +85,7 @@ namespace Project.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Accommodations", (string)null);
+                    b.ToTable("Accommodations");
                 });
 
             modelBuilder.Entity("Project.Models.AccommodationAmenity", b =>
@@ -105,7 +108,7 @@ namespace Project.Migrations
 
                     b.HasIndex("AmenityId");
 
-                    b.ToTable("AccommodationAmenities", (string)null);
+                    b.ToTable("AccommodationAmenities");
                 });
 
             modelBuilder.Entity("Project.Models.AccommodationImage", b =>
@@ -134,7 +137,7 @@ namespace Project.Migrations
 
                     b.HasIndex("AccommodationId");
 
-                    b.ToTable("AccommodationImages", (string)null);
+                    b.ToTable("AccommodationImages");
                 });
 
             modelBuilder.Entity("Project.Models.Amenity", b =>
@@ -152,7 +155,7 @@ namespace Project.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Amenities", (string)null);
+                    b.ToTable("Amenities");
                 });
 
             modelBuilder.Entity("Project.Models.Booking", b =>
@@ -198,7 +201,7 @@ namespace Project.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Bookings", (string)null);
+                    b.ToTable("Bookings");
                 });
 
             modelBuilder.Entity("Project.Models.ContactMessage", b =>
@@ -237,7 +240,7 @@ namespace Project.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ContactMessages", (string)null);
+                    b.ToTable("ContactMessages");
                 });
 
             modelBuilder.Entity("Project.Models.Review", b =>
@@ -271,7 +274,7 @@ namespace Project.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Reviews", (string)null);
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("Project.Models.UnavailablePeriod", b =>
@@ -293,7 +296,7 @@ namespace Project.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UnavailablePeriods", (string)null);
+                    b.ToTable("UnavailablePeriods");
                 });
 
             modelBuilder.Entity("Project.Models.User", b =>
@@ -338,7 +341,7 @@ namespace Project.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Project.Models.AccommodationAmenity", b =>
